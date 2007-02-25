@@ -66,15 +66,16 @@ graph, but which it has no direct connections to.")
 
 ;;; Public interface
 
-(defun generate-graph (object &optional attributes)
-  "Construct a GRAPH with ATTRIRBUTES starting from OBJECT, using the
-OBJECT- protocol."
-  (multiple-value-bind (nodes edges)
-      (construct-graph object)
-    (make-instance 'graph
-                   :attributes attributes
-                   :nodes nodes
-                   :edges edges)))
+(defgeneric generate-graph (object &optional attributes)
+  (:documentation "Construct a GRAPH with ATTRIBUTES starting
+from OBJECT, using the OBJECT- protocol.")
+  (:method ((object t) &optional attributes)
+    (multiple-value-bind (nodes edges)
+        (construct-graph object)
+      (make-instance 'graph
+                     :attributes attributes
+                     :nodes nodes
+                     :edges edges))))
 
 (defun print-graph (graph &optional (stream *standard-output*))
   "Print a dot-format representation GRAPH to STREAM."
