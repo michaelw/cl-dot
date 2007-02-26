@@ -1,6 +1,9 @@
 (in-package cl-dot)
 
-(defvar *dot-path* "/usr/bin/dot" "Path to `dot`")
+(defvar *dot-path*
+  #+(or win32 mswindows) "\"C:/Program Files/ATT/Graphviz/bin/dot.exe\""
+  #-(or win32 mswindows) "/usr/bin/dot"
+  "Path to `dot`")
 
 ;;; Classes
 
@@ -90,18 +93,21 @@ the program in \*DOT-PATH*."
   (let ((outfile outfile)
         (dot-string (with-output-to-string (stream)
                       (print-graph graph stream))))
+    #+lispworks (with-open-stream
+                    (s (sys:open-pipe (concatenate 'string *dot-path*
+                                                   " -Tpng -o" outfile)
+                                      :direction :input))
+                  (write-line dot-string s)
+                  (force-output s))
     #+sbcl
     (sb-ext:run-program *dot-path*
-                        (list "-Tps"
-                              "-o"
-                              outfile)
+                        (list "-Tps" "-o" outfile)
                         :input (make-string-input-stream dot-string)
                         :output *standard-output*)
-    #-sbcl
+    #-(or sbcl lispworks)
     (error "Don't know how to execute a program on this platform")))
 
 ;;; Internal
-
 (defun construct-graph (object)
   (let ((handled-objects (make-hash-table))
         (nodes nil)
@@ -152,58 +158,59 @@ the program in \*DOT-PATH*."
 
 (defun generate-dot (nodes edges attributes
                      &optional (*standard-output* *standard-output*))
-  (let ((*print-right-margin* 65535))
-    (flet ((print-key-value (key value attributes)
-             (destructuring-bind (key value-type)
-                 (or (assoc key attributes)
-                     (error "Invalid attribute ~S" key))
-               (format t "~a=~a" (string-downcase key)
-                       (etypecase value-type
-                         ((member integer)
-                          (unless (typep value 'integer)
-                            (error "Invalid value for ~S: ~S is not an integer"
-                                   key value))
-                          value)
-                         ((member boolean)
-                          (if value
-                              "true"
-                              "false"))
-                         ((member text)
-                          (textify value))
-                         ((member float)
-                          (coerce value 'single-float))
-                         (list
-                          (unless (member value value-type :test 'equal)
-                            (error "Invalid value for ~S: ~S is not one of ~S"
-                                   key value value-type))
-                          (if (symbolp value)
-                              (string-downcase value)
-                              value)))))))
-      (format t "digraph {~%")
-      (loop for (name value) on attributes by #'cddr
-            do
-            (print-key-value name value *graph-attributes*)
-            (format t ";~%"))
-      (dolist (node nodes)
-        (format t "  ~a [" (id-of node))
-        (loop for (name value) on (attributes-of node) by #'cddr
-              for prefix = "" then ","
+  (with-standard-io-syntax ()
+    (let ((*print-right-margin* 65535))
+      (flet ((print-key-value (key value attributes)
+               (destructuring-bind (key value-type)
+                   (or (assoc key attributes)
+                       (error "Invalid attribute ~S" key))
+                 (format t "~a=~a" (string-downcase key)
+                         (etypecase value-type
+                           ((member integer)
+                            (unless (typep value 'integer)
+                              (error "Invalid value for ~S: ~S is not an integer"
+                                     key value))
+                            value)
+                           ((member boolean)
+                            (if value
+                                "true"
+                                "false"))
+                           ((member text)
+                            (textify value))
+                           ((member float)
+                            (coerce value 'single-float))
+                           (list
+                            (unless (member value value-type :test 'equal)
+                              (error "Invalid value for ~S: ~S is not one of ~S"
+                                     key value value-type))
+                            (if (symbolp value)
+                                (string-downcase value)
+                                value)))))))
+        (format t "digraph {~%")
+        (loop for (name value) on attributes by #'cddr
               do
-              (write-string prefix)
-              (print-key-value name value *node-attributes*))
-        (format t "];~%"))
-      (dolist (edge edges)
-        (format t "  ~a -> ~a ["
-                (id-of (source-of edge))
-                (id-of (target-of edge)))
-        (loop for (name value) on (attributes-of edge) by #'cddr
-              for prefix = "" then ","
-              do
-              (write-string prefix)
-              (print-key-value name value *edge-attributes*))
-        (format t "];~%"))
-      (format t "}"))
-    (values)))
+              (print-key-value name value *graph-attributes*)
+              (format t ";~%"))
+        (dolist (node nodes)
+          (format t "  ~a [" (textify (id-of node)))
+          (loop for (name value) on (attributes-of node) by #'cddr
+                for prefix = "" then ","
+                do
+                (write-string prefix)
+                (print-key-value name value *node-attributes*))
+          (format t "];~%"))
+        (dolist (edge edges)
+          (format t "  ~a -> ~a ["
+                  (textify (id-of (source-of edge)))
+                  (textify (id-of (target-of edge))))
+          (loop for (name value) on (attributes-of edge) by #'cddr
+                for prefix = "" then ","
+                do
+                (write-string prefix)
+                (print-key-value name value *edge-attributes*))
+          (format t "];~%"))
+        (format t "}"))
+      (values))))
 
 (defun textify (object)
   (let ((string (princ-to-string object)))

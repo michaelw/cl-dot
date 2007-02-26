@@ -1,5 +1,14 @@
 2007-02-26  Michael Weber  <michaelw@foldr.org>
 
+	* Released version 0.3.0
+
+	* cl-dot.lisp: *dot-path* for win32;
+	execution support for LispWorks; escape node IDs with TEXTIFY.
+	Original patch by Mészáros Levente, edited by michaelw@foldr.org
+	
+	* cl-dot.lisp (generate-dot): Use WITH-STANDARD-IO-SYNTAX for
+	printing dot file.  Patch by Todd Sabin <tsabin@optonline.net>.
+
 	* Released version 0.2.0
 	
 	* taken over maintainership from Juho Snellman <jsnell@iki.fi>
