@@ -91,20 +91,27 @@ from OBJECT, using the OBJECT- protocol.")
   "Generate a Postscript representation of GRAPH to OUTFILE, by running
 the program in \*DOT-PATH*."
   (let ((outfile outfile)
+        #+sbcl
         (dot-string (with-output-to-string (stream)
                       (print-graph graph stream))))
-    #+lispworks (with-open-stream
-                    (s (sys:open-pipe (concatenate 'string *dot-path*
-                                                   " -Tpng -o" outfile)
-                                      :direction :input))
-                  (write-line dot-string s)
-                  (force-output s))
     #+sbcl
     (sb-ext:run-program *dot-path*
                         (list "-Tps" "-o" outfile)
                         :input (make-string-input-stream dot-string)
                         :output *standard-output*)
-    #-(or sbcl lispworks)
+    #+allegro
+    (excl.osi:with-command-io
+        ((format nil "~A -Tps -o ~A" *dot-path* outfile))
+      (:input (dot-stream)
+         (print-graph graph dot-stream)))
+    #+lispworks
+    (with-open-stream
+        (dot-stream (sys:open-pipe (concatenate 'string *dot-path*
+                                                " -Tpng -o" outfile)
+                                   :direction :input))
+      (print-graph graph dot-stream)
+      (force-output dot-stream))
+    #-(or sbcl lispworks allegro)
     (error "Don't know how to execute a program on this platform")))
 
 ;;; Internal
