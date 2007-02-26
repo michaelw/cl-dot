@@ -1,0 +1,332 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html> 
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <title>CL-DOT - Generate Dot Output from Arbitrary Lisp Data</title>
+  <style type="text/css">
+  body { background-color: white; text-align: justify; }
+  pre { padding:5px; background-color:#e0e0e0 }
+  h3, h4 { text-decoration: underline; }
+  a { text-decoration: none; }
+  a.noborder { border:0px }
+  a.noborder:hover { border:0px }  
+  a.none { border:1px solid white; }
+  a.none:hover { border:1px solid white; }
+  a { border:1px solid white; }
+  a:hover   { border: 1px solid black; } 
+  a.noborder { border:0px }
+  a.noborder:hover { border:0px }
+  pre a { border:1px solid #e0e0e0 }
+  </style>
+
+</head>
+
+<body>
+
+<h2>CL-DOT - Generate Dot Output from Arbitrary Lisp Data</h2>
+
+<blockquote>
+<br>&nbsp;<br><h3><a name=abstract class=none>Abstract</a></h3>
+
+<p>
+  CL-DOT is a small package for easily generating dot (a program in the
+  <a href="http://www.graphviz.org/">GraphViz</a> suite) output from
+  arbitrary Lisp data.
+</p>
+
+<p>
+Original author is <a href="http://jsnell.iki.fi/">Juho Snellman</a>,
+current maintainer is <a href="mailto:michaelw@foldr.org">Michael
+Weber</a>.  The code comes with
+a <a href="http://www.opensource.org/licenses/bsd-license.php">BSD-style
+license</a>.
+</p>
+
+<p>
+<font color=red>Download shortcut:</font> <a href="http://www.foldr.org/~michaelw/projects/cl-dot/cl-dot.tar.gz">http://www.foldr.org/~michaelw/projects/cl-dot/cl-dot.tar.gz</a>.
+</blockquote>
+
+<br>&nbsp;<br><h3><a class=none name="contents">Contents</a></h3>
+<ol>
+  <li><a href="#download">Download</a>
+  <li><a href="#support">Support</a>
+  <li><a href="#usage">Usage</a>
+  <li><a href="#dictionary">The CL-DOT dictionary</a>
+    <ol>
+      <li><a href="#*dot-path*"><code>*dot-path*</code></a>
+      <li><a href="#attributed"><code>attributed</code></a>
+      <li><a href="#dot-graph"><code>dot-graph</code></a>
+      <li><a href="#generate-graph"><code>generate-graph</code></a>
+      <li><a href="#node"><code>node</code></a>
+      <li><a href="#object-knows-of"><code>object-knows-of</code></a>
+      <li><a href="#object-node"><code>object-node</code></a>
+      <li><a href="#object-pointed-to-by"><code>object-pointed-to-by</code></a>
+      <li><a href="#object-points-to"><code>object-points-to</code></a>
+      <li><a href="#print-graph"><code>print-graph</code></a>
+    </ol>
+  <li><a href="#ack">Acknowledgements</a>
+</ol>
+
+<br>&nbsp;<br><h3><a class=none name="download">Download</a></h3>
+
+<p>CL-DOT together with this documentation can be downloaded from <a
+href="http://www.foldr.org/~michaelw/projects/cl-dot/cl-dot.tar.gz">http://www.foldr.org/~michaelw/projects/cl-dot/cl-dot.tar.gz</a>. 
+  Alternatively, it can be installed via <a href="http://www.cliki.net/ASDF-Install">ASDF-Install</a>:
+</p>
+
+<pre>
+  (asdf-install:install "http://www.foldr.org/~michaelw/projects/cl-dot/cl-dot.tar.gz")
+</pre>
+
+
+<p>The current version is 0.2.0.</p>
+
+<p>
+  A <a href="http://subversion.tigris.org/">Subversion</a> repository
+  is available
+  at <a href="http://svn.foldr.org/~michaelw/cl-dot/">http://svn.foldr.org/~michaelw/cl-dot/</a>.
+</p>
+
+
+<br>&nbsp;<br><h3><a class=none name="support">Support</a></h3>
+
+<p>
+Please direct bug reports, patches, questions, and any other feedback
+to <a href="mailto:michaelw+equiv@foldr.org">Michael Weber</a>.
+</p>
+
+<br>&nbsp;<br><h3><a class=none name="Usage">Usage</a></h3>
+
+<p>First, define methods for the generic functions in the <code>OBJECT-</code>
+  protocol for all objects that can appear in your graph. <a href="#object-node"><code>OBJECT-NODE</code></a> must be defined for all objects, the others have a default implementation. For example: </p><pre><code>;; Conses
+(defmethod <a href="#object-node">cl-dot:object-node</a> ((object cons))
+  (make-instance '<a href="#node">cl-dot:node</a>
+                 :attributes '(:label "cell \\N"
+                               :shape :box)))
+(defmethod <a href="#object-points-to">cl-dot:object-points-to</a> ((object cons))
+  (list (car object)
+        (make-instance '<a href="#attributed">cl-dot:attributed</a>
+                       :object (cdr object)
+                       :attributes '(:weight 3))))
+;; Symbols
+(defmethod <a href="#object-node">cl-dot:object-node</a> ((object symbol))
+  (make-instance '<a href="#node">cl-dot:node</a>
+                 :attributes `(:label ,object
+                               :shape :hexagon
+                               :style :filled
+                               :color :black
+                               :fillcolor "#ccccff")))
+</code></pre><p>To generate a graph object for your data, call <a href="#generate-graph"><code>GENERATE-GRAPH</code></a>. From the graph object you can either generate dot-format output to some stream with <a href="#print-graph"><code>PRINT-GRAPH</code></a>, or call <code>dot</code> directly on the data with <a href="#dot-graph"><code>DOT-GRAPH</code></a>. For example: </p><pre><code>(let* ((data '(a b c #1=(b z) c d #1#))
+       (graph (<a href="#generate-graph">cl-dot:generate-graph</a> data)))
+  (<a href="#dot-graph">cl-dot:dot-graph</a> graph "/tmp/test.ps"))
+</code></pre><p>You can also specify attributes for the whole graph: </p><pre><code>(let* ((data '(a b c #1=(b z) c d #1#))
+       (graph (<a href="#generate-graph">cl-dot:generate-graph</a> data '(:rankdir "LR"))))
+  (<a href="#dot-graph">cl-dot:dot-graph</a> graph "/tmp/test.ps"))
+</code></pre>
+
+
+<br>&nbsp;<br><h3><a class=none name="dictionary">The CL-DOT dictionary</a></h3>
+
+
+
+<!-- Entry for *DOT-PATH* -->
+
+<p><br>[Special variable]<br><a class=none name='*dot-path*'><b>*dot-path*</b></a>
+<blockquote><br>
+
+<p>Path to <code>dot</code></p>
+
+</blockquote>
+
+<!-- End of entry for *DOT-PATH* -->
+
+
+<!-- Entry for ATTRIBUTED -->
+
+<p><br>[Standard class]<br><a class=none name='attributed'><b>attributed</b></a>
+<blockquote><br>
+
+<p>Wraps an object (initarg <code>:OBJECT</code>)
+with <code>dot</code> attribute information (a plist,
+initarg <code>:ATTRIBUTES</code>) </p>
+
+</blockquote>
+
+<!-- End of entry for ATTRIBUTED -->
+
+
+<!-- Entry for DOT-GRAPH -->
+
+<p><br>[Function]<br><a class=none name='dot-graph'><b>dot-graph</b> <i>graph outfile</i> =&gt; <i>result</i></a>
+<blockquote><br>
+
+  <p>Generate a Postscript representation of <em>GRAPH</em>
+  to <em>OUTFILE</em>, by running the program
+  in <a href="#*dot-path*"><code>*DOT-PATH*</code></a>. </p>
+
+</blockquote>
+
+<!-- End of entry for DOT-GRAPH -->
+
+
+<!-- Entry for GENERATE-GRAPH -->
+
+<p><br>[Generic function]<br><a class=none name='generate-graph'><b>generate-graph</b> <i>object <tt>&amp;optional</tt> attributes</i> =&gt; <i>result</i></a>
+<blockquote><br>
+
+<p>Construct a <em>GRAPH</em> with <em>ATTRIBUTES</em> starting
+from <em>OBJECT</em>, using the <code>OBJECT-</code> protocol. </p>
+
+</blockquote>
+
+<!-- End of entry for GENERATE-GRAPH -->
+
+
+<!-- Entry for GENERATE-GRAPH -->
+
+<p><br>[Method]<br><a class=none><b>generate-graph</b> <i>object <tt>&amp;optional</tt> attributes</i> =&gt; <i>result</i></a>
+<blockquote><br>
+
+
+
+</blockquote>
+
+<!-- End of entry for GENERATE-GRAPH -->
+
+
+<!-- Entry for NODE -->
+
+<p><br>[Standard class]<br><a class=none name='node'><b>node</b></a>
+<blockquote><br>
+
+<p>A graph node with <code>dot</code> attributes (a plist,
+initarg <code>:ATTRIBUTES</code>) and an optional <code>dot</code> id
+(initarg <code>:ID</code>, autogenerated by default). </p>
+
+</blockquote>
+
+<!-- End of entry for NODE -->
+
+
+<!-- Entry for OBJECT-KNOWS-OF -->
+
+<p><br>[Generic function]<br><a class=none name='object-knows-of'><b>object-knows-of</b> <i>object</i> =&gt; <i>result</i></a>
+<blockquote><br>
+
+<p>Return a list of objects that this object knows should be part of
+the graph, but which it has no direct connections to. </p>
+
+</blockquote>
+
+<!-- End of entry for OBJECT-KNOWS-OF -->
+
+
+<!-- Entry for OBJECT-KNOWS-OF -->
+
+<p><br>[Method]<br><a class=none><b>object-knows-of</b> <i>object</i> =&gt; <i>result</i></a>
+<blockquote><br>
+
+
+
+</blockquote>
+
+<!-- End of entry for OBJECT-KNOWS-OF -->
+
+
+<!-- Entry for OBJECT-NODE -->
+
+<p><br>[Generic function]<br><a class=none name='object-node'><b>object-node</b> <i>object</i> =&gt; <i>result</i></a>
+<blockquote><br>
+
+<p>Return a <em>NODE</em> instance for this object,
+or <code>NIL</code>. In the latter case the object will not be
+included in the graph, but it can still have an indirect effect via
+other protocol functions
+(e.g. <a
+href="#object-knows-of"><code>OBJECT-KNOWS-OF</code></a>). This
+function will only be called once for each object during the
+generation of a graph. </p>
+
+</blockquote>
+
+<!-- End of entry for OBJECT-NODE -->
+
+
+<!-- Entry for OBJECT-POINTED-TO-BY -->
+
+<p><br>[Generic function]<br><a class=none name='object-pointed-to-by'><b>object-pointed-to-by</b> <i>object</i> =&gt; <i>result</i></a>
+<blockquote><br>
+
+<p>Return a list of objects to which the <em>NODE</em> of this object should be
+connected. The edges will be directed from the other objects to this
+one. To assign dot attributes to the generated edges, each object can
+optionally be wrapped in a instance
+of <a href="#attributed"><code>ATTRIBUTED</code></a>. </p>
+
+</blockquote>
+
+<!-- End of entry for OBJECT-POINTED-TO-BY -->
+
+
+<!-- Entry for OBJECT-POINTED-TO-BY -->
+
+<p><br>[Method]<br><a class=none><b>object-pointed-to-by</b> <i>object</i> =&gt; <i>result</i></a>
+<blockquote><br>
+
+
+
+</blockquote>
+
+<!-- End of entry for OBJECT-POINTED-TO-BY -->
+
+
+<!-- Entry for OBJECT-POINTS-TO -->
+
+<p><br>[Generic function]<br><a class=none name='object-points-to'><b>object-points-to</b> <i>object</i> =&gt; <i>result</i></a>
+<blockquote><br>
+
+<p>Return a list of objects to which the <em>NODE</em> of this object
+should be connected. The edges will be directed from this object to
+the others. To assign dot attributes to the generated edges, each
+object can optionally be wrapped in a instance
+of <a href="#attributed"><code>ATTRIBUTED</code></a>. </p>
+
+</blockquote>
+
+<!-- End of entry for OBJECT-POINTS-TO -->
+
+
+<!-- Entry for OBJECT-POINTS-TO -->
+
+<p><br>[Method]<br><a class=none><b>object-points-to</b> <i>object</i> =&gt; <i>result</i></a>
+<blockquote><br>
+
+
+
+</blockquote>
+
+<!-- End of entry for OBJECT-POINTS-TO -->
+
+
+<!-- Entry for PRINT-GRAPH -->
+
+<p><br>[Function]<br><a class=none name='print-graph'><b>print-graph</b> <i>graph <tt>&amp;optional</tt> stream</i> =&gt; <i>result</i></a>
+<blockquote><br>
+
+<p>Print a dot-format representation of <em>GRAPH</em> to <em>STREAM</em>. </p>
+
+</blockquote>
+
+<!-- End of entry for PRINT-GRAPH -->
+
+
+<br>&nbsp;<br><h3><a class=none name="ack">Acknowledgements</a></h3>
+<p>
+This documentation was prepared with <a href="http://weitz.de/documentation-template/">DOCUMENTATION-TEMPLATE</a>.
+</p>
+
+<p><a href="http://www.foldr.org/~michaelw/">BACK TO MY HOMEPAGE</a>
+
+</body>
+</html>
