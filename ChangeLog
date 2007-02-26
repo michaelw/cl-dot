@@ -1,5 +1,7 @@
 2007-02-26  Michael Weber  <michaelw@foldr.org>
 
+	* Released version 0.4.0
+
 	* cl-dot.lisp (dot-graph): Allegro support (patch by
 	Robert P. Goldman <rpgoldman@yahoo.com>), slightly edited.
 
