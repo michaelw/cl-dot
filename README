@@ -60,7 +60,7 @@ Functions
     OBJECT- protocol.
 
   (DOT-GRAPH GRAPH OUTFILE)
-    Generate a Postscript represenation of GRAPH to OUTFILE, by running
+    Generate a Postscript representation of GRAPH to OUTFILE, by running
     the program in *DOT-PATH*.
 
   (PRINT-GRAPH GRAPH &OPTIONAL (STREAM *STANDARD-OUTPUT*))

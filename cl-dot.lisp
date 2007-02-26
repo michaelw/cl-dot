@@ -85,8 +85,8 @@ from OBJECT, using the OBJECT- protocol.")
                 stream))
 
 (defun dot-graph (graph outfile)
-  "Generate a Postscript represenation of GRAPH to OUTFILE, by running
-the program in *DOT-PATH*."
+  "Generate a Postscript representation of GRAPH to OUTFILE, by running
+the program in \*DOT-PATH*."
   (let ((outfile outfile)
         (dot-string (with-output-to-string (stream)
                       (print-graph graph stream))))

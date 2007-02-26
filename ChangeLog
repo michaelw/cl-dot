@@ -1,0 +1,14 @@
+2007-02-26  Michael Weber  <michaelw@foldr.org>
+
+	* Released version 0.2.0
+	
+	* taken over maintainership from Juho Snellman <jsnell@iki.fi>
+
+	* cl-dot.lisp (generate-graph): changed to a generic function
+	* cl-dot.lisp: various updates
+	
+	* docs/index.html: HTML documentation
+	
+	* cl-dot.asd: various changes
+
+	

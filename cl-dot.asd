@@ -1,12 +1,23 @@
 ;; -*- Syntax: Ansi-Common-Lisp; Mode: lisp; -*-
 
-(defpackage :cl-dot-system (:use #:asdf #:cl))
-(in-package :cl-dot-system)
-
-(defsystem :cl-dot
-  :version "0.1"
+(asdf:defsystem :cl-dot
+  :version "0.2.0"
+  :description "Generate Dot Output from Arbitrary Lisp Data"
+  :author "Juho Snellman <jsnell@iki.fi>"
+  :maintainer "Michael Weber <michaelw@foldr.org>"
   :serial t
   :components
   ((:file "package")
    (:file "attributes")
-   (:file "cl-dot")))
+   (:file "cl-dot")
+   (:static-file "README")
+   (:static-file "COPYING")
+   (:static-file "ChangeLog")
+   (:module "examples"
+            :components
+            ((:static-file "class-example" :pathname "class-example.lisp")
+             (:static-file "list-example" :pathname "list-example.lisp")
+             (:static-file "sb-c-example" :pathname "sb-c-example.lisp")))
+   (:module "docs"
+            :components
+            ((:html-file "index")))))
