@@ -1,3 +1,11 @@
+2007-03-02  Michael Weber  <michaelw@foldr.org>
+
+	* cl-dot.lisp (dot-graph): output .ps for LispWorks 
+
+2007-02-27  Michael Weber  <michaelw@foldr.org>
+
+	* cl-dot.lisp (dot-graph): removed extra binding
+
 2007-02-26  Michael Weber  <michaelw@foldr.org>
 
 	* Released version 0.4.0
