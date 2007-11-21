@@ -166,12 +166,13 @@ initarg <code>:ATTRIBUTES</code>) </p>
 
 <!-- Entry for DOT-GRAPH -->
 
-<p><br>[Function]<br><a class=none name='dot-graph'><b>dot-graph</b> <i>graph outfile</i> =&gt; <i>result</i></a>
+<p><br>[Function]<br><a class=none name='dot-graph'><b>dot-graph</b> <i>graph outfile<tt> &amp;key</tt> format</i> =&gt; <i>result</i></a>
 <blockquote><br>
 
-  <p>Generate a Postscript representation of <em>GRAPH</em>
-  to <em>OUTFILE</em>, by running the program
-  in <a href="#*dot-path*"><code>*DOT-PATH*</code></a>. </p>
+  <p>Renders <em>GRAPH</em> to <em>OUTFILE</em>, by running the program
+  in <a href="#*dot-path*"><code>*DOT-PATH*</code></a>.
+    The default <em>FORMAT</em> is Postscript.
+  </p>
 
 </blockquote>
 

@@ -87,25 +87,26 @@ from OBJECT, using the OBJECT- protocol.")
                 (attributes-of graph)
                 stream))
 
-(defun dot-graph (graph outfile)
-  "Generate a Postscript representation of GRAPH to OUTFILE, by running
-the program in \*DOT-PATH*."
+(defun dot-graph (graph outfile &key (format :ps))
+  "Renders GRAPH to OUTFILE by running the program in \*DOT-PATH*.
+The default FORMAT is Postscript."
+  (when (null format) (setf format :ps))
   #+sbcl
   (let ((dot-string (with-output-to-string (stream)
                       (print-graph graph stream))))
     (sb-ext:run-program *dot-path*
-                        (list "-Tps" "-o" outfile)
+                        (list (format nil "-T~(~a~)" format) "-o" outfile)
                         :input (make-string-input-stream dot-string)
                         :output *standard-output*))
   #+allegro
   (excl.osi:with-command-io
-      ((format nil "~A -Tps -o ~A" *dot-path* outfile))
+      ((format nil "~A -T~(~a~) -o ~A" *dot-path* format outfile))
     (:input (dot-stream)
             (print-graph graph dot-stream)))
   #+lispworks
   (with-open-stream
-      (dot-stream (sys:open-pipe (concatenate 'string *dot-path*
-                                              " -Tps -o" outfile)
+      (dot-stream (sys:open-pipe (format nil "~A -T~(~a~) -o ~A"
+                                         *dot-path* format outfile)
                                  :direction :input))
     (print-graph graph dot-stream)
     (force-output dot-stream))

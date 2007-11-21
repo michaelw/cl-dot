@@ -1,3 +1,7 @@
+2007-11-21  Michael Weber  <michaelw@foldr.org>
+
+	* cl-dot.lisp (dot-graph): add keyword parameter FORMAT
+
 2007-03-02  Michael Weber  <michaelw@foldr.org>
 
 	* cl-dot.lisp (dot-graph): output .ps for LispWorks 
