@@ -110,7 +110,12 @@ The default FORMAT is Postscript."
                                  :direction :input))
     (print-graph graph dot-stream)
     (force-output dot-stream))
-  #-(or sbcl lispworks allegro)
+  #+clisp
+  (with-open-stream (out (ext:make-pipe-output-stream
+                          (format nil "~A -T~(~a~) -o ~A"
+                                  *dot-path* format outfile)))
+    (print-graph graph out))
+  #-(or sbcl lispworks allegro clisp)
   (error "Don't know how to execute a program on this platform"))
 
 ;;; Internal

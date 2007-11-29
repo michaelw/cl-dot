@@ -1,3 +1,10 @@
+2007-11-29  Michael Weber  <michaelw@foldr.org>
+	
+	* Released version 0.5.0
+	
+	* cl-dot.lisp (dot-graph): add support for CLISP.  Patch by
+	Martin Dengler <martin@martindengler.com>.
+
 2007-11-21  Michael Weber  <michaelw@foldr.org>
 
 	* cl-dot.lisp (dot-graph): add keyword parameter FORMAT
@@ -21,7 +28,7 @@
 
 	* cl-dot.lisp: *dot-path* for win32;
 	execution support for LispWorks; escape node IDs with TEXTIFY.
-	Original patch by Mészáros Levente, edited by michaelw@foldr.org
+	Original patch by Levente Mészáros, edited by michaelw@foldr.org
 	
 	* cl-dot.lisp (generate-dot): Use WITH-STANDARD-IO-SYNTAX for
 	printing dot file.  Patch by Todd Sabin <tsabin@optonline.net>.
