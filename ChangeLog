@@ -1,3 +1,19 @@
+2008-02-17  Michael Weber  <michaelw@foldr.org>
+
+	* Released version 0.6.0
+
+	* cl-dot.lisp: introduced the GRAPH-OBJECT- protocol,
+	moved OBJECT- protocol to deprecated.lisp
+
+	(generate-graph-from-roots): new function
+	(generate-graph): deprecated
+
+	* deprecated.lisp: new file
+	* docs/index.html: documented API changes
+	* examples/: adapted examples to new API
+	* cl-dot.asd: added list-example-old.lisp, deprecated.lisp
+	* README: removed API documentation with pointer to docs directory
+
 2007-11-29  Michael Weber  <michaelw@foldr.org>
 	
 	* Released version 0.5.0
@@ -43,5 +59,3 @@
 	* docs/index.html: HTML documentation
 	
 	* cl-dot.asd: various changes
-
-	

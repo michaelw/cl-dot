@@ -34,47 +34,53 @@ information (a plist, initarg :ATTRIBUTES)"))
 
 ;;; Protocol functions
 
-(defgeneric object-node (object)
+(defgeneric graph-object-node (graph object)
   (:documentation
    "Return a NODE instance for this object, or NIL. In the latter case
 the object will not be included in the graph, but it can still have an
-indirect effect via other protocol functions (e.g. OBJECT-KNOWS-OF).
+indirect effect via other protocol functions (e.g. GRAPH-OBJECT-KNOWS-OF).
 This function will only be called once for each object during the
-generation of a graph."))
+generation of a graph.")
+  (:method ((graph (eql 'default)) object)
+    (declare (ignore graph))
+    (object-node object)))
 
-(defgeneric object-points-to (object)
+(defgeneric graph-object-points-to (graph object)
   (:documentation
    "Return a list of objects to which the NODE of this object should be
 connected. The edges will be directed from this object to the others.
 To assign dot attributes to the generated edges, each object can optionally
 be wrapped in a instance of ATTRIBUTED.")
-  (:method ((object t))
-    nil))
+  (:method ((graph (eql 'default)) object)
+    (declare (ignore graph))
+    (object-points-to object)))
 
-(defgeneric object-pointed-to-by (object)
+(defgeneric graph-object-pointed-to-by (graph object)
   (:documentation
    "Return a list of objects to which the NODE of this object should be
 connected. The edges will be directed from the other objects to this
 one. To assign dot attributes to the generated edges, each object can
 optionally be wrapped in a instance of ATTRIBUTED.")
-  (:method ((object t))
-    nil))
+  (:method ((graph (eql 'default)) object)
+    (declare (ignore graph))
+    (object-pointed-to-by object)))
 
-(defgeneric object-knows-of (object)
+(defgeneric graph-object-knows-of (graph object)
   (:documentation
    "Return a list of objects that this object knows should be part of the
 graph, but which it has no direct connections to.")
-  (:method ((object t))
-    nil))
+  (:method ((graph (eql 'default)) object)
+    (declare (ignore graph))
+    (object-knows-of object)))
 
 ;;; Public interface
 
-(defgeneric generate-graph (object &optional attributes)
+(defgeneric generate-graph-from-roots (graph objects &optional attributes)
   (:documentation "Construct a GRAPH with ATTRIBUTES starting
-from OBJECT, using the OBJECT- protocol.")
-  (:method ((object t) &optional attributes)
+from OBJECTS, using the GRAPH-OBJECT- protocol.")
+  (:method (graph objects &optional attributes)
     (multiple-value-bind (nodes edges)
-        (construct-graph object)
+        (construct-graph graph objects)
       (make-instance 'graph
                      :attributes attributes
                      :nodes nodes
@@ -119,7 +125,7 @@ The default FORMAT is Postscript."
   (error "Don't know how to execute a program on this platform"))
 
 ;;; Internal
-(defun construct-graph (object)
+(defun construct-graph (graph objects)
   (let ((handled-objects (make-hash-table))
         (nodes nil)
         (edges nil)
@@ -149,22 +155,22 @@ The default FORMAT is Postscript."
                  (return-from handle-object (handle-object (object-of object))))
                ;; If object has been already been visited, skip
                (unless (nth-value 1 (get-node object))
-                 (let ((node (object-node object)))
+                 (let ((node (graph-object-node graph object)))
                    (setf (gethash object handled-objects) node)
-                   (map nil #'handle-object (object-knows-of object))
-                   (map nil #'handle-object (object-points-to object))
-                   (map nil #'handle-object (object-pointed-to-by object))
+                   (map nil #'handle-object (graph-object-knows-of graph object))
+                   (map nil #'handle-object (graph-object-points-to graph object))
+                   (map nil #'handle-object (graph-object-pointed-to-by graph object))
                    (when node
                      (push node nodes)
-                     (dolist (to (object-points-to object))
+                     (dolist (to (graph-object-points-to graph object))
                        (let ((target (get-node to)))
                          (when target
                            (add-edge node target (get-attributes to)))))
-                     (dolist (from (object-pointed-to-by object))
+                     (dolist (from (graph-object-pointed-to-by graph object))
                        (let ((source (get-node from)))
                          (when source
                            (add-edge source node (get-attributes from))))))))))
-      (handle-object object)
+      (map nil #'handle-object objects)
       (values nodes edges))))
 
 (defun generate-dot (nodes edges attributes
