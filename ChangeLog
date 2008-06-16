@@ -1,6 +1,10 @@
 2008-06-16  Michael Weber  <michaelw@foldr.org>
 
 	* cl-dot.lisp: default methods for graph-object- protocol methods
+	
+	(dot-graph), doc/index.html: added support for undirected
+	graphs (via neato); patch by Angel Bayloff <bayloff@gmail.com>,
+	slightly edited.
 
 2008-02-17  Michael Weber  <michaelw@foldr.org>
 

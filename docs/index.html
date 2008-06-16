@@ -64,6 +64,7 @@ license</a>.
   <li><a href="#dictionary">The CL-DOT dictionary</a>
     <ol>
       <li><a href="#*dot-path*"><code>*dot-path*</code></a></li>
+      <li><a href="#*neato-path*"><code>*neato-path*</code></a></li>
       <li><a href="#attributed"><code>attributed</code></a></li>
       <li><a href="#dot-graph"><code>dot-graph</code></a></li>
       <li><a href="#generate-graph-from-roots"><code>generate-graph-from-roots</code></a></li>
@@ -145,6 +146,15 @@ From the graph object you can either generate dot-format output to some stream w
   (<a href="#dot-graph">cl-dot:dot-graph</a> graph "/tmp/test.png" :format :png))
 </code></pre>
 
+<p>To generate a drawing for an undirected graph you can call <a href="#dot-graph">DOT-GRAH</a> in the following way
+<pre><code>
+(<a href="#dot-graph">cl-dot:dot-graph graph</a> "/tmp/test.png" :format :png :directed nil)
+</code></pre>
+
+<p>When the <em>directed</em> keyword argument is set to nil (the default value is t) <a href="#dot-graph">DOT-GRAPH</a> outputs an undirected graph instead of directed. To do that it needs the <em>neato</em> program from the <em>graphviz</em> package, which is used to layout undirected graphs. The path to the neato program is stored in the <a href="#*neato-path*">*NEATO-PATH*</a> special variable. 
+
+<p>Note that <em>neato</em> will not fold automatically duplicate edges, i.e if you have an edge from <b>a</b> to <b>b</b> and then from <b>b</b> to <b>a</b> (which is the case by definition for undirected graphs) you'll end up with both edges printed by 'neato'. So if your in memory representation contains both edges (most of the times it will as most graph algorithms depend on that when working with undirected graphs) you will have to remove one of the edges before 
+outputing the graph.
 
 <br>&nbsp;<br><h3><a class=none name="dictionary">The CL-DOT dictionary</a></h3>
 
@@ -160,6 +170,18 @@ From the graph object you can either generate dot-format output to some stream w
 </blockquote>
 
 <!-- End of entry for *DOT-PATH* -->
+
+
+<!-- Entry for *NEATO-PATH* -->
+
+<p><br>[Special variable]<br><a class=none name='*neato-path*'><b>*neato-path*</b></a>
+<blockquote><br>
+
+<p>Path to <code>neato</code></p>
+
+</blockquote>
+
+<!-- End of entry for *NEATO-PATH* -->
 
 
 <!-- Entry for ATTRIBUTED -->
@@ -178,11 +200,16 @@ initarg <code>:ATTRIBUTES</code>) </p>
 
 <!-- Entry for DOT-GRAPH -->
 
-<p><br>[Function]<br><a class=none name='dot-graph'><b>dot-graph</b> <i>graph outfile<tt> &amp;key</tt> format</i> =&gt; <i>result</i></a>
+<p><br>[Function]<br><a class=none name='dot-graph'><b>dot-graph</b> <i>graph outfile<tt> &amp;key</tt> format directed</i> =&gt; <i>result</i></a>
 <blockquote><br>
 
   <p>Renders <em>GRAPH</em> to <em>OUTFILE</em>, by running the program
-  in <a href="#*dot-path*"><code>*DOT-PATH*</code></a>.
+    in either <a href="#*dot-path*"><code>*DOT-PATH*</code></a> or <a href="#*neato-path*"><code>*NEATO-PATH*</code></a>. 
+    When <em>DIRECTED</em> is t (the default) it will use the program in <a href="#*dot-path*"><code>*DOT-PATH*</code></a> to render a directed graph. 
+    Otherwise (when <em>DIRECTED</em> is set to nil) it will use the program in <a href="#*neato-path*"><code>*NEATO-PATH*</code></a> to render an undirected graph. 
+  </p>
+  
+  <p>
     The default <em>FORMAT</em> is Postscript.
   </p>
 

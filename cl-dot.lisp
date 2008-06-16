@@ -5,6 +5,13 @@
   #-(or win32 mswindows) "/usr/bin/dot"
   "Path to `dot`")
 
+;; the path to the neato executable (used for drawing undirected
+;; graphs). 
+(defvar *neato-path*
+  #+(or win32 mswindows) "\"C:/Program Files/ATT/Graphviz/bin/neato.exe\""
+  #-(or win32 mswindows) "/usr/bin/neato"
+  "Path to `neato`")
+
 ;;; Classes
 
 (defvar *id*)
@@ -92,43 +99,58 @@ from OBJECTS, using the GRAPH-OBJECT- protocol.")
                      :nodes nodes
                      :edges edges))))
 
-(defun print-graph (graph &optional (stream *standard-output*))
+(defun print-graph (graph &rest options
+                    &key (stream *standard-output*) (directed t))
   "Print a dot-format representation GRAPH to STREAM."
-  (generate-dot (nodes-of graph)
-                (edges-of graph)
-                (attributes-of graph)
-                stream))
+  (declare (ignore stream directed))
+  (apply #'generate-dot
+         (nodes-of graph)
+         (edges-of graph)
+         (attributes-of graph)
+         options))
 
-(defun dot-graph (graph outfile &key (format :ps))
-  "Renders GRAPH to OUTFILE by running the program in \*DOT-PATH*.
-The default FORMAT is Postscript."
+(defun dot-graph (graph outfile &key (format :ps) (directed t))
+  "Renders GRAPH to OUTFILE by running the program in \*DOT-PATH* or
+*NEATO-PATH* depending on the value of the DIRECTED keyword
+argument.  The default is a directed graph.  The default
+FORMAT is Postscript."
   (when (null format) (setf format :ps))
-  #+sbcl
-  (let ((dot-string (with-output-to-string (stream)
-                      (print-graph graph stream))))
-    (sb-ext:run-program *dot-path*
-                        (list (format nil "-T~(~a~)" format) "-o" outfile)
-                        :input (make-string-input-stream dot-string)
-                        :output *standard-output*))
-  #+allegro
-  (excl.osi:with-command-io
-      ((format nil "~A -T~(~a~) -o ~A" *dot-path* format outfile))
-    (:input (dot-stream)
-            (print-graph graph dot-stream)))
-  #+lispworks
-  (with-open-stream
-      (dot-stream (sys:open-pipe (format nil "~A -T~(~a~) -o ~A"
-                                         *dot-path* format outfile)
-                                 :direction :input))
-    (print-graph graph dot-stream)
-    (force-output dot-stream))
-  #+clisp
-  (with-open-stream (out (ext:make-pipe-output-stream
-                          (format nil "~A -T~(~a~) -o ~A"
-                                  *dot-path* format outfile)))
-    (print-graph graph out))
-  #-(or sbcl lispworks allegro clisp)
-  (error "Don't know how to execute a program on this platform"))
+
+  (let ((dot-path (if directed *dot-path* *neato-path*)))
+    #+sbcl
+    (let ((dot-string (with-output-to-string (stream)
+			(print-graph graph
+				     :stream stream
+				     :directed directed))))
+      (sb-ext:run-program dot-path
+			  (list (format nil "-T~(~a~)" format) "-o" outfile)
+			  :input (make-string-input-stream dot-string)
+			  :output *standard-output*))
+    #+allegro
+    (excl.osi:with-command-io
+	((format nil "~A -T~(~a~) -o ~A" dot-path format outfile))
+      (:input (dot-stream)
+	      (print-graph graph
+			   :stream dot-stream
+			   :directed directed)))
+    #+lispworks
+    (with-open-stream
+	(dot-stream (sys:open-pipe (format nil "~A -T~(~a~) -o ~A"
+					   dot-path format outfile)
+				   :direction :input))
+      (print-graph graph
+		   :stream dot-stream
+		   :directed directed)
+      (force-output dot-stream))
+    #+clisp
+    (with-open-stream (out (ext:make-pipe-output-stream
+			    (format nil "~A -T~(~a~) -o ~A"
+				    dot-path format outfile)))
+      (print-graph graph
+		   :stream out
+		   :directed directed))
+    #-(or sbcl lispworks allegro clisp)
+    (error "Don't know how to execute a program on this platform")))
 
 ;;; Internal
 (defun construct-graph (graph objects)
@@ -180,9 +202,12 @@ The default FORMAT is Postscript."
       (values nodes edges))))
 
 (defun generate-dot (nodes edges attributes
-                     &optional (*standard-output* *standard-output*))
+                     &key (stream *standard-output*) (directed t))
   (with-standard-io-syntax ()
-    (let ((*print-right-margin* 65535))
+    (let ((*standard-output* (or stream *standard-output*))
+          (*print-right-margin* 65535)
+          (edge-op (if directed "->" "--"))
+          (graph-type (if directed "digraph" "graph")))
       (flet ((print-key-value (key value attributes)
                (destructuring-bind (key value-type)
                    (or (assoc key attributes)
@@ -209,7 +234,7 @@ The default FORMAT is Postscript."
                             (if (symbolp value)
                                 (string-downcase value)
                                 value)))))))
-        (format t "digraph {~%")
+        (format t "~a {~%" graph-type)
         (loop for (name value) on attributes by #'cddr
               do
               (print-key-value name value *graph-attributes*)
@@ -223,8 +248,9 @@ The default FORMAT is Postscript."
                 (print-key-value name value *node-attributes*))
           (format t "];~%"))
         (dolist (edge edges)
-          (format t "  ~a -> ~a ["
+          (format t "  ~a ~a ~a ["
                   (textify (id-of (source-of edge)))
+                  edge-op
                   (textify (id-of (target-of edge))))
           (loop for (name value) on (attributes-of edge) by #'cddr
                 for prefix = "" then ","
