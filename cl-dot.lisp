@@ -53,7 +53,9 @@ To assign dot attributes to the generated edges, each object can optionally
 be wrapped in a instance of ATTRIBUTED.")
   (:method ((graph (eql 'default)) object)
     (declare (ignore graph))
-    (object-points-to object)))
+    (object-points-to object))
+  (:method (graph (object t))
+    nil))
 
 (defgeneric graph-object-pointed-to-by (graph object)
   (:documentation
@@ -63,7 +65,9 @@ one. To assign dot attributes to the generated edges, each object can
 optionally be wrapped in a instance of ATTRIBUTED.")
   (:method ((graph (eql 'default)) object)
     (declare (ignore graph))
-    (object-pointed-to-by object)))
+    (object-pointed-to-by object))
+  (:method (graph (object t))
+    nil))
 
 (defgeneric graph-object-knows-of (graph object)
   (:documentation
@@ -71,7 +75,9 @@ optionally be wrapped in a instance of ATTRIBUTED.")
 graph, but which it has no direct connections to.")
   (:method ((graph (eql 'default)) object)
     (declare (ignore graph))
-    (object-knows-of object)))
+    (object-knows-of object))
+  (:method (graph (object t))
+    nil))
 
 ;;; Public interface
 

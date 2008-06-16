@@ -1,3 +1,7 @@
+2008-06-16  Michael Weber  <michaelw@foldr.org>
+
+	* cl-dot.lisp: default methods for graph-object- protocol methods
+
 2008-02-17  Michael Weber  <michaelw@foldr.org>
 
 	* Released version 0.6.0
