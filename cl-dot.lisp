@@ -183,18 +183,21 @@ FORMAT is Postscript."
                  (return-from handle-object (handle-object (object-of object))))
                ;; If object has been already been visited, skip
                (unless (nth-value 1 (get-node object))
-                 (let ((node (graph-object-node graph object)))
+                 (let ((node (graph-object-node graph object))
+                       (knows-of (graph-object-knows-of graph object))
+                       (points-to (graph-object-points-to graph object))
+                       (pointed-to (graph-object-pointed-to-by graph object)))
                    (setf (gethash object handled-objects) node)
-                   (map nil #'handle-object (graph-object-knows-of graph object))
-                   (map nil #'handle-object (graph-object-points-to graph object))
-                   (map nil #'handle-object (graph-object-pointed-to-by graph object))
+                   (map nil #'handle-object knows-of)
+                   (map nil #'handle-object points-to)
+                   (map nil #'handle-object pointed-to)
                    (when node
                      (push node nodes)
-                     (dolist (to (graph-object-points-to graph object))
+                     (dolist (to points-to)
                        (let ((target (get-node to)))
                          (when target
                            (add-edge node target (get-attributes to)))))
-                     (dolist (from (graph-object-pointed-to-by graph object))
+                     (dolist (from pointed-to-by)
                        (let ((source (get-node from)))
                          (when source
                            (add-edge source node (get-attributes from))))))))))
