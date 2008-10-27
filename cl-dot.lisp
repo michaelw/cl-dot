@@ -197,7 +197,7 @@ FORMAT is Postscript."
                        (let ((target (get-node to)))
                          (when target
                            (add-edge node target (get-attributes to)))))
-                     (dolist (from pointed-to-by)
+                     (dolist (from pointed-to)
                        (let ((source (get-node from)))
                          (when source
                            (add-edge source node (get-attributes from))))))))))
