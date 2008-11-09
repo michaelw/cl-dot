@@ -13,6 +13,8 @@
 
 2008-06-16  Michael Weber  <michaelw@foldr.org>
 
+	* Released version 0.7.0
+
 	* cl-dot.lisp: default methods for graph-object- protocol methods
 	
 	(dot-graph), doc/index.html: added support for undirected
