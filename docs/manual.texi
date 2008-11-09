@@ -464,8 +464,8 @@ The value of @var{edge-attribute} mus a single edge attribute,
 @pxref{Edge Attributes}.  For example:
 
 @example
-(@pcoderef{cl-dot,generate-graph-from-roots} graph initial-states
-                                  '(:edge (:arrowhead :odot)))
+(@coderef{generate-graph-from-roots} graph initial-states
+                           '(:edge (:arrowhead :odot)))
 @end example
 
 @item :layers @var{text}
@@ -476,9 +476,9 @@ The value of @var{node-attribute} must be a single node attribute,
 @pxref{Node Attributes}.  For example:
 
 @example
-(@pcoderef{cl-dot,generate-graph-from-roots} graph initial-states
-                                  '(:node (:shape :box)
-                                    :node (:color :red)))
+(@coderef{generate-graph-from-roots} graph initial-states
+                           '(:node (:shape :box)
+                             :node (:color :red)))
 @end example
 
 @item :nodesep @var{float}
@@ -520,8 +520,8 @@ left-justified node label which includes the node identifier.
 @var{shape} can be one of the following keywords:
 
 @lisp
-:record :plaintext :ellipse :circle :egg :triangle :box :diamond
-:trapezium :parallelogram :house :hexagon :octagon
+:record :plaintext :ellipse :circle :egg :triangle :box
+:diamond :trapezium :parallelogram :house :hexagon :octagon
 @end lisp
 
 @item :style (:filled :solid :dashed :dotted :bold :invis)
@@ -538,8 +538,8 @@ left-justified node label which includes the node identifier.
 @var{arrow-spec} can be one of the following keywords:
 
 @lisp
-:none :normal :inv :dot :odot :invdot :invodot :tee :empty :invempty
-:open :halfopen :diamond :odiamond :box :obox :crow
+:none :normal :inv :dot :odot :invdot :invodot :tee :empty
+:invempty :open :halfopen :diamond :odiamond :box :obox :crow
 @end lisp
 
 @item :arrowtail @var{arrow-spec}
@@ -547,8 +547,8 @@ left-justified node label which includes the node identifier.
 @var{arrow-spec} can be one of the following keywords:
 
 @lisp
-:none :normal :inv :dot :odot :invdot :invodot :tee :empty :invempty
-:open :halfopen :diamond :odiamond :box :obox :crow
+:none :normal :inv :dot :odot :invdot :invodot :tee :empty
+:invempty :open :halfopen :diamond :odiamond :box :obox :crow
 @end lisp
 
 @item :color @var{text}
