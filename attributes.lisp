@@ -6,6 +6,8 @@
     (:ratio (:fill :compress :auto)) ;; Could actually be a float number too
     (:margin float)
     (:nodesep float)
+    (:node attribute)
+    (:edge attribute)
     (:ranksep float)
     (:ordering (:out))
     (:rankdir ("LR" "RL" "BT"))

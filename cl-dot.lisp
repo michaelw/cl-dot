@@ -210,59 +210,74 @@ FORMAT is Postscript."
     (let ((*standard-output* (or stream *standard-output*))
           (*print-right-margin* 65535)
           (edge-op (if directed "->" "--"))
-          (graph-type (if directed "digraph" "graph")))
-      (flet ((print-key-value (key value attributes)
-               (destructuring-bind (key value-type)
-                   (or (assoc key attributes)
-                       (error "Invalid attribute ~S" key))
-                 (format t "~a=~a" (string-downcase key)
-                         (etypecase value-type
-                           ((member integer)
-                            (unless (typep value 'integer)
-                              (error "Invalid value for ~S: ~S is not an integer"
-                                     key value))
-                            value)
-                           ((member boolean)
-                            (if value
-                                "true"
-                                "false"))
-                           ((member text)
-                            (textify value))
-                           ((member float)
-                            (coerce value 'single-float))
-                           (list
-                            (unless (member value value-type :test 'equal)
-                              (error "Invalid value for ~S: ~S is not one of ~S"
-                                     key value value-type))
-                            (if (symbolp value)
-                                (string-downcase value)
-                                value)))))))
-        (format t "~a {~%" graph-type)
-        (loop for (name value) on attributes by #'cddr
-              do
-              (print-key-value name value *graph-attributes*)
-              (format t ";~%"))
-        (dolist (node nodes)
-          (format t "  ~a [" (textify (id-of node)))
-          (loop for (name value) on (attributes-of node) by #'cddr
-                for prefix = "" then ","
-                do
-                (write-string prefix)
-                (print-key-value name value *node-attributes*))
-          (format t "];~%"))
-        (dolist (edge edges)
-          (format t "  ~a ~a ~a ["
-                  (textify (id-of (source-of edge)))
-                  edge-op
-                  (textify (id-of (target-of edge))))
-          (loop for (name value) on (attributes-of edge) by #'cddr
-                for prefix = "" then ","
-                do
-                (write-string prefix)
-                (print-key-value name value *edge-attributes*))
-          (format t "];~%"))
-        (format t "}"))
+          (graph-type (if directed "digraph" "graph"))
+          (node-defaults '())
+          (edge-defaults '()))
+      (format t "~a {~%" graph-type)
+      (loop for (name value) on attributes by #'cddr do
+            (cond ((eq :node name)
+                   (push value node-defaults))
+                  ((eq :edge name)
+                   (push value edge-defaults))
+                  (t
+                   (print-key-value stream name value *graph-attributes*)
+                   (format t ";~%"))))
+      (setf node-defaults (nreverse node-defaults)
+            edge-defaults (nreverse edge-defaults))
+      (loop for (name value) in node-defaults do
+            (write-string "  node [")
+            (print-key-value stream name value *node-attributes*)
+            (write-line "]"))
+      (loop for (name value) in edge-defaults do
+            (write-string "  edge [")
+            (print-key-value stream name value *edge-attributes*)
+            (write-line "]"))
+      (dolist (node nodes)
+        (format t "  ~a [" (textify (id-of node)))
+        (loop for (name value) on (attributes-of node) by #'cddr
+              for prefix = "" then "," do
+              (write-string prefix)
+              (print-key-value stream name value *node-attributes*))
+        (format t "];~%"))
+      (dolist (edge edges)
+        (format t "  ~a ~a ~a ["
+                (textify (id-of (source-of edge)))
+                edge-op
+                (textify (id-of (target-of edge))))
+        (loop for (name value) on (attributes-of edge) by #'cddr
+              for prefix = "" then "," do
+              (write-string prefix)
+              (print-key-value stream name value *edge-attributes*))
+        (format t "];~%"))
+      (format t "}")
       (values))))
+
+(defun print-key-value (stream key value attributes)
+  (destructuring-bind (key value-type)
+      (or (assoc key attributes)
+          (error "Invalid attribute ~S" key))
+    (format stream "~a=~a" (string-downcase key)
+            (etypecase value-type
+              ((member integer)
+               (unless (typep value 'integer)
+                 (error "Invalid value for ~S: ~S is not an integer"
+                        key value))
+               value)
+              ((member boolean)
+               (if value
+                   "true"
+                   "false"))
+              ((member text)
+               (textify value))
+              ((member float)
+               (coerce value 'single-float))
+              (list
+               (unless (member value value-type :test 'equal)
+                 (error "Invalid value for ~S: ~S is not one of ~S"
+                        key value value-type))
+               (if (symbolp value)
+                   (string-downcase value)
+                   value))))))
 
 (defun textify (object)
   (let ((string (princ-to-string object)))

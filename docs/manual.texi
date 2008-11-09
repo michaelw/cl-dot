@@ -178,7 +178,16 @@ The CL-DOT Package
 * Variables::
 * Generating Output::
 * The GRAPH-OBJECT Protocol::
+* Dot Attributes::
 * Classes::
+
+Dot Attributes
+
+@menu
+* Graph Attributes::
+* Node Attributes::
+* Edge Attributes::
+@end menu
 @end detailmenu
 @end menu
 @html
@@ -328,6 +337,7 @@ CL-DOT.  Patches which add more features are highly welcome.
 @menu
 * Variables::
 * The GRAPH-OBJECT Protocol::
+* Dot Attributes::
 * Generating Output::
 * Classes::
 * Deprecated Functionality::
@@ -418,6 +428,155 @@ The default method returns the empty list.
 @end deffn
 
 @c -----------------------------------------------------------------
+@node Dot Attributes
+@section Dot Attributes
+
+The rendering of Dot graphs, their nodes and edges can be influenced by
+@dfn{attributes}.  Attributes are represented as @dfn{keywords} of the
+same name.  Multiple attributes can be given in form of a @dfn{plist}.
+
+CL-DOT supports most Dot attributes, a detailed list follows.
+Attributes which are not recognized result in an @dfn{error} when
+generating a graph.
+
+Most attributes have self-explanatory names, for more information we
+refer to the documentation of Dot.
+
+@menu
+* Graph Attributes::
+* Node Attributes::
+* Edge Attributes::
+@end menu
+
+@c -----------------------------------------------------------------
+@node Graph Attributes
+@subsection Graph Attributes
+
+@dfn{Graph attributes} can be given to
+@coderef{generate-graph-from-roots} and apply to the whole graph.
+
+@table @code
+@item :bgcolor @var{text}
+@item :center @var{integer}
+@item :color @var{text}
+@item :edge @var{edge-attribute}
+The value of @var{edge-attribute} mus a single edge attribute,
+@pxref{Edge Attributes}.  For example:
+
+@example
+(@pcoderef{cl-dot,generate-graph-from-roots} graph initial-states
+                                  '(:edge (:arrowhead :odot)))
+@end example
+
+@item :layers @var{text}
+@item :margin @var{float}
+@item :mclimit @var{float}
+@item :node @var{node-attribute}
+The value of @var{node-attribute} must be a single node attribute,
+@pxref{Node Attributes}.  For example:
+
+@example
+(@pcoderef{cl-dot,generate-graph-from-roots} graph initial-states
+                                  '(:node (:shape :box)
+                                    :node (:color :red)))
+@end example
+
+@item :nodesep @var{float}
+@item :nslimit @var{float}
+@item :ordering (:out)
+@item :page @var{text}
+@item :pagedir @var{text}
+@item :rank (:same :min :max)
+@item :rankdir ("LR" "RL" "BT")
+@item :ranksep @var{float}
+@item :ratio (:fill :compress :auto)
+@item :rotate @var{integer}
+@item :size @var{text}
+@end table
+
+@c -----------------------------------------------------------------
+@node Node Attributes
+@subsection Node Attributes
+
+@table @code
+@item :color @var{text}
+@item :fillcolor @var{text}
+@item :fixed-size @var{boolean}
+@item :fontname @var{text}
+@item :fontsize @var{integer}
+@item :height @var{integer}
+@item :label @var{text}
+The string @var{text} may include escaped newlines @samp{\n}, @samp{\l},
+or @samp{\r} for center, left, and right justified lines.  The string
+@samp{\N} will be replaced by the node name.
+
+Note that verbatim backslashes inside of Lisp strings must be escaped
+themselves.  E.g., the attribute @code{:label "Node \\N\\l"} produces a
+left-justified node label which includes the node identifier.
+
+@item :layer @var{text}
+@item :shape @var{shape}
+
+@var{shape} can be one of the following keywords:
+
+@lisp
+:record :plaintext :ellipse :circle :egg :triangle :box :diamond
+:trapezium :parallelogram :house :hexagon :octagon
+@end lisp
+
+@item :style (:filled :solid :dashed :dotted :bold :invis)
+@item :width @var{integer}
+@end table
+
+@c -----------------------------------------------------------------
+@node Edge Attributes
+@subsection Edge Attributes
+
+@table @code
+@item :arrowhead @var{arrow-spec}
+
+@var{arrow-spec} can be one of the following keywords:
+
+@lisp
+:none :normal :inv :dot :odot :invdot :invodot :tee :empty :invempty
+:open :halfopen :diamond :odiamond :box :obox :crow
+@end lisp
+
+@item :arrowtail @var{arrow-spec}
+
+@var{arrow-spec} can be one of the following keywords:
+
+@lisp
+:none :normal :inv :dot :odot :invdot :invodot :tee :empty :invempty
+:open :halfopen :diamond :odiamond :box :obox :crow
+@end lisp
+
+@item :color @var{text}
+@item :constraint @var{boolean}
+@item :decorate @var{boolean}
+@item :dir (:forward :back :both :none)
+@item :fontcolor @var{text}
+@item :fontname @var{text}
+@item :fontsize @var{integer}
+@item :headclip @var{boolean}
+@item :headlabel @var{text}
+@item :label @var{text}
+@item :labeldistance @var{integer}
+@item :labelfontcolor @var{text}
+@item :labelfontname @var{text}
+@item :labelfontsize @var{integer}
+@item :layer @var{text}
+@item :minlen @var{integer}
+@item :port-label-distance @var{integer}
+@item :samehead @var{boolean}
+@item :sametail @var{boolean}
+@item :style (:solid :dashed :dotted :bold :invis)
+@item :tailclip @var{boolean}
+@item :taillabel @var{text}
+@item :weight @var{integer}
+@end table
+
+@c -----------------------------------------------------------------
 @node Generating Output
 @section Generating Output
 
@@ -457,14 +616,15 @@ GRAPH-OBJECT Protocol}) or
 @anchor{node}
 @deftp {Standard Class} node @initarg{attributes} @initarg{id}
 A graph node with dot attributes (a @dfn{plist}, initarg
-@var{attributes}) and an optional node identifier (initarg @var{id},
-auto-generated by default).
+@var{attributes}, @pxref{Dot Attributes}) and an optional node
+identifier (initarg @var{id}, auto-generated by default).
 @end deftp
 
 @anchor{attributed}
 @deftp {Standard Class} attributed @initarg{object} @initarg{attributes}
-Wraps an object (initarg @var{object}) with Dot attribute
-information (a @dfn{plist}, initarg @var{attributes}).
+Wraps an object (initarg @var{object}) with Dot attribute information (a
+@dfn{plist}, initarg @var{attributes}, @pxref{Dot Attributes}).
+@xref{Usage}, for an example of how to use @code{attributed}.
 @end deftp
 
 @c -----------------------------------------------------------------
@@ -566,9 +726,9 @@ it ties in with @cliki{cl-graph}.
 Quoting the main developer,
 Attila Lendvai:@footnote{Message-Id: @url{http://groups.google.com/group/comp.lang.lisp/msg/f6da031aa1a3faf7,<49d30481-63ee-475e-be17-07cc684f2a56@@w34g2000hsg.googlegroups.com>}}
 @quotation
-``[@dots{}] if you only want to layout a few graphs from the repl then 
-trivial-shell and the utils in cl-graph are your friends to exec the 
-dot binary. cl-graphviz only helps if you want to have a web service 
+``[@dots{}] if you only want to layout a few graphs from the repl then
+trivial-shell and the utils in cl-graph are your friends to exec the
+dot binary. cl-graphviz only helps if you want to have a web service
 or something and want to avoid exec'ing.''
 @end quotation
 @item s-dot
