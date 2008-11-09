@@ -18,7 +18,7 @@
 @c * link to svn page
 @c * consider separate summary page, a la CFFI
 
-@set VERSION 0.7.0
+@set VERSION 0.8.0
 @set EDITION 1.0
 
 @copying

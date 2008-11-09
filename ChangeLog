@@ -1,5 +1,7 @@
 2008-11-09  Michael Weber  <michaelw@foldr.org>
 
+	* Released version 0.8.0
+
 	* cl-dot.lisp (textify,print-key-value): allow labels to be
 	aligned.  Patch adapted from Nikodemus Siivola
 	<nikodemus@random-state.net>.
