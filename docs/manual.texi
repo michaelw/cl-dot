@@ -133,7 +133,7 @@ Lisp data.  It works with the following Common Lisp implementations:
 
 Original author is @url{http://jsnell.iki.fi/,Juho Snellman}, current
 maintainer is @url{http://www.foldr.org/~michaelw/,Michael Weber}.  The
-code comes with a BSD-style license, @pxref{Copying}.
+code is covered by the MIT license, @pxref{Copying}.
 
 @ifnottex
 @ifhtml
