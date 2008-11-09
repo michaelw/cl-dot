@@ -505,14 +505,22 @@ The value of @var{node-attribute} must be a single node attribute,
 @item :fontname @var{text}
 @item :fontsize @var{integer}
 @item :height @var{integer}
-@item :label @var{text}
-The string @var{text} may include escaped newlines @samp{\n}, @samp{\l},
-or @samp{\r} for center, left, and right justified lines.  The string
-@samp{\N} will be replaced by the node name.
+@item :label @var{text} @anchor{node-attr-label}
+Provide a label for node.  The string @var{text} may include
+escaped newlines @samp{\l}, @samp{\n}, or @samp{\r} for left, center,
+and right justified lines.  The string @samp{\N} will be replaced by
+the node name.
 
 Note that verbatim backslashes inside of Lisp strings must be escaped
 themselves.  E.g., the attribute @code{:label "Node \\N\\l"} produces a
 left-justified node label which includes the node identifier.
+
+By default, lines (ended by a @code{#\Newline} character)
+contained in @var{text} are horizontally centered in Dot output.
+However, if @var{text} is a list @code{(@var{alignment} @var{text})},
+then @var{alignment} specifies how lines in string @var{text} are
+rendered.  @var{alignment} can be one of @code{:left}, @code{:center},
+@code{:right}.
 
 @item :layer @var{text}
 @item :shape @var{shape}
@@ -561,6 +569,8 @@ left-justified node label which includes the node identifier.
 @item :headclip @var{boolean}
 @item :headlabel @var{text}
 @item :label @var{text}
+@xref{node-attr-label,Node Attributes}, for more information.
+
 @item :labeldistance @var{integer}
 @item :labelfontcolor @var{text}
 @item :labelfontname @var{text}

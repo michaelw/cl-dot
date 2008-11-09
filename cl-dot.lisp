@@ -268,7 +268,10 @@ FORMAT is Postscript."
                    "true"
                    "false"))
               ((member text)
-               (textify value))
+               (if (consp value)
+                   (destructuring-bind (alignment value) value
+                     (textify value :alignment alignment))
+                   (textify value)))
               ((member float)
                (coerce value 'single-float))
               (list
@@ -279,8 +282,10 @@ FORMAT is Postscript."
                    (string-downcase value)
                    value))))))
 
-(defun textify (object)
-  (let ((string (princ-to-string object)))
+(defun textify (object &key alignment)
+  (check-type alignment (member nil :center :left :right))
+  (let ((string (princ-to-string object))
+        (alignment (or alignment :center)))
     (with-output-to-string (stream)
       (write-char #\" stream)
       (loop for c across string do
@@ -292,7 +297,13 @@ FORMAT is Postscript."
                (write-char c stream))
               (#\Newline
                (write-char #\\ stream)
-               (write-char #\n stream))
+               (ecase alignment
+                 (:center
+                  (write-char #\n stream))
+                 (:left
+                  (write-char #\l stream))
+                 (:right
+                  (write-char #\r stream))))
               (t
                (write-char c stream))))
       (write-char #\" stream))))

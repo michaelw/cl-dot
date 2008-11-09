@@ -1,8 +1,14 @@
 2008-11-09  Michael Weber  <michaelw@foldr.org>
 
+	* cl-dot.lisp (textify,print-key-value): allow labels to be
+	aligned.  Patch adapted from Nikodemus Siivola
+	<nikodemus@random-state.net>.
+
 	* cl-dot.lisp (generate-graph): handle :node and :edge attributes
-	special
+	specially.  Patch adapted from Nikodemus Siivola
+	<nikodemus@random-state.net>.
 	(print-key-value): new function, extracted from generate-graph.
+	
 	* docs/manual.texi: document accepted attributes
 
 	* docs/manual.texi: new manual
