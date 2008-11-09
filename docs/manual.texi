@@ -8,14 +8,12 @@
 @ifnothtml
 @exampleindent 2
 @end ifnothtml
-
 @c @syncodeindex tp fn
 @c %**end of header
 
 @c TODO
 @c * htmlize code
 @c * hyperspec links to CL vocabulary
-@c * link to svn page
 @c * consider separate summary page, a la CFFI
 
 @set VERSION 0.8.0
