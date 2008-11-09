@@ -1,0 +1,186 @@
+/* Text, Layout */
+body {
+    padding: 1ex 3em;
+    font-family: "Trebuchet MS", Verdana, Helvetica, sans-serif;
+    font-size: 100%;
+    min-width: 40em;
+    line-height: 140%;
+}
+
+body li + li {
+    margin-top: 1ex;
+}
+
+ul ul {
+    margin-bottom: 1ex;
+}
+
+.contents li + li,
+ul.menu li,
+ul[compact] li {
+    margin-top: 0;
+}
+
+dl dd + dt {
+    margin-top: 2ex;
+}
+
+/* makeinfo generates stray <br> elements */
+dl > dd > br {
+    display: none;
+}
+
+@media print {
+body {
+    margin: 0.5in 1in;
+}
+}
+
+h1.settitle {
+    text-align: right;
+}
+h2 {
+    color: #AE0A00;
+}
+
+/* Definitions */
+div.defun {
+    border-top: thin solid black;
+    padding-top: 1ex;
+    margin-bottom: 4em;
+}
+
+div.defun > b { /* name */
+    color: #AE0A00;
+    font-family: Arial, sans-serif;
+}
+
+span.roman {
+    font-family: "Trebuchet MS", Verdana, Helvetica, sans-serif;
+    font-size: smaller;
+    font-style: italic;
+    color: #700;
+}
+
+var {
+    color: #AE0A00;
+}
+
+.keyword {
+    color: #aa0;
+}
+
+/* Code, Examples */
+pre.example,
+pre.smallexample,
+pre.lisp,
+pre.smalllisp {
+    margin: 4ex 3em;
+    padding: 1.5ex 1em;
+    background-color:#e8e8e8;
+}
+pre.smalllisp {
+    font-size: 95%;
+}
+@media screen {
+pre.example,
+pre.smallexample,
+pre.lisp,
+pre.smalllisp {
+    overflow: auto;
+}
+}
+
+/* Anchor hovering */
+a { text-decoration: none; }
+a.noborder { border:0px }
+a.noborder:hover { border:0px }  
+a.none { border:1px solid white; }
+a.none:hover { border:1px solid white; }
+a { border:1px solid white; }
+a:hover   { border: 1px solid black; } 
+a.noborder { border:0px }
+a.noborder:hover { border:0px }
+
+pre a,
+pre a:hover {
+  border:none;
+}
+
+div.contents > h2 {
+    margin-top: 3ex;
+}
+
+h2.unnumbered {
+    margin-bottom: 4ex;
+}
+
+/* Nodes */
+h1.settitle + div.node,
+h2.chapter + div.node,
+body > div.node:first-child {
+    margin-top: 0;
+}
+
+div.node {
+    padding: 0.25ex 0.5em;
+    border: thin solid #faa;
+    margin-top: 10ex;
+    margin-bottom: 0.5ex;
+    font-weight: bold;
+    font-size: smaller;
+    background: #fee;
+    color: #777;
+    text-align: right;
+    font-family: "Trebuchet MS", Helvetica, Arial, sans-serif;
+    clear: both;
+}
+
+/* Floats */
+.float {
+    margin: 7ex auto;
+    padding: 1ex 1em 0 1em;
+}
+
+.float img {
+    width: 100%;
+}
+
+.float img[src="test-undir.png"] {
+    height: 12cm;
+    width: inherit;
+}
+
+/* Menus */
+/* ul.menu, */
+#master-menu {
+    display: none;
+}
+
+@media print {
+.menu,
+div.node {
+    display: none;
+}
+h2.chapter {
+    margin-top: 4ex;
+}
+}
+
+.node p {
+  margin: 0;
+  padding: 0;
+}
+.node a {
+  color: #a00;
+  border-color: #fee;
+}
+.node a:hover {
+  border-color: black;
+}
+.node a:visited {
+  color: #500;
+}
+.node > hr {
+  display: none;
+}

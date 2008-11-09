@@ -1,0 +1,624 @@
+\input texinfo   @c -*-texinfo-*-
+@c %**start of header
+@setfilename cl-dot.info
+@settitle CL-DOT User Manual
+@ifhtml
+@exampleindent 0
+@end ifhtml
+@ifnothtml
+@exampleindent 2
+@end ifnothtml
+
+@c @syncodeindex tp fn
+@c %**end of header
+
+@c TODO
+@c * htmlize code
+@c * hyperspec links to CL vocabulary
+@c * link to svn page
+@c * consider separate summary page, a la CFFI
+
+@set VERSION 0.7.0
+@set EDITION 1.0
+
+@copying
+This manual is for CL-DOT, version @value{VERSION}.
+
+Copyright @copyright{} 2005 Juho Snellman @*
+Copyright @copyright{} 2007,2008 Michael Weber
+
+@quotation
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+@sc{The software is provided ``as is'', without warranty of any kind,
+express or implied, including but not limited to the warranties of
+merchantability, fitness for a particular purpose and
+noninfringement.  In no event shall the authors or copyright holders be
+liable for any claim, damages or other liability, whether in an action
+of contract, tort or otherwise, arising from, out of or in connection
+with the software or the use or other dealings in the software.}
+@end quotation
+@end copying
+
+@titlepage
+@title CL-DOT User Manual
+@author Michael Weber
+
+@c  The following two commands
+@c  start the copyright page.
+@page
+@vskip 0pt plus 1filll
+@insertcopying
+@end titlepage
+@c So the toc is printed at the start.
+@ifnothtml
+@contents
+@end ifnothtml
+
+@macro keyword{kw}
+@ifnothtml
+@ifnotinfo
+@code{\kw\}@c
+@end ifnotinfo
+@end ifnothtml
+@html
+@code{<span class="keyword">\kw\</span>}@c
+@end html
+@ifinfo
+\kw\@c
+@end ifinfo
+@end macro
+
+@macro initarg{initarg}
+@keyword{:\initarg\} \initarg\@c
+@end macro
+
+@macro coderef{ref}
+@ifnottex
+@ifnotinfo
+@code{@ref{\ref\}}@c
+@end ifnotinfo
+@end ifnottex
+@iftex @code{\ref\}@c
+@end iftex
+@ifinfo
+\ref\@c
+@end ifinfo
+@end macro
+
+@macro pcoderef{package,ref}
+@ifnottex
+@ifnotinfo
+@code{@ref{\ref\,\package\:\ref\}}@c
+@end ifnotinfo
+@end ifnottex
+@iftex @code{\package\:\ref\}@c
+@end iftex
+@ifinfo
+\package\:\ref\@c
+@end ifinfo
+@end macro
+
+@macro cliki{project}
+@url{http://www.cliki.net/\project\,\project\}@c
+@end macro
+
+@ifnottex
+@node Top, Installation, ,
+@top CL-DOT --- Generate Dot Output from Arbitrary Lisp Data
+@end ifnottex
+@iftex
+@top Introduction
+@end iftex
+
+CL-DOT is a small package for easily generating Dot (a program in the
+@url{http://www.graphviz.org/,GraphViz} suite) output from arbitrary
+Lisp data.  It works with the following Common Lisp implementations:
+
+@itemize @bullet
+@item @url{http://www.franz.com/products/allegrocl/,Allegro CL@registeredsymbol{}}
+@item @url{http://clisp.cons.org/,@acronym{GNU} CLISP}
+@item @url{http://www.lispworks.com/,LispWorks}
+@item @url{http://www.sbcl.org/,@acronym{SBCL}}
+@end itemize
+
+Original author is @url{http://jsnell.iki.fi/,Juho Snellman}, current
+maintainer is @url{http://www.foldr.org/~michaelw/,Michael Weber}.  The
+code comes with a BSD-style license, @pxref{Copying}.
+
+@ifnottex
+@ifhtml
+This manual is also available in @url{manual.pdf,@acronym{PDF} format}.
+
+@quotation
+@strong{Download shortcut:}
+@url{http://www.foldr.org/~michaelw/projects/cl-dot/cl-dot.tar.gz}
+@end quotation
+@end ifhtml
+@end ifnottex
+
+@ifhtml
+@contents
+@end ifhtml
+@html
+@c We need to keep the menu for HTML, otherwise makeinfo complains.
+@c Also, makeinfo is not very clever, hence the stray </p> below...
+</p><div id="master-menu">@c
+<h2>Menu</h2>
+@end html
+@menu
+* Installation::
+* Usage::
+* Limitations::
+* The CL-DOT Package::
+* Support::
+* Related Software::
+* Copying::
+* Indices::
+
+@detailmenu
+Indices
+
+* Variable Index::
+* Function Index::
+* Class Index::
+@c * Concept Index::
+
+The CL-DOT Package
+
+* Variables::
+* Generating Output::
+* The GRAPH-OBJECT Protocol::
+* Classes::
+@end detailmenu
+@end menu
+@html
+</div>@c
+@end html
+
+@c -----------------------------------------------------------------
+@node Installation
+@chapter Installation
+
+CL-DOT together with this documentation can be downloaded from
+@quotation
+@url{http://www.foldr.org/~michaelw/projects/cl-dot/cl-dot.tar.gz}
+@end quotation
+
+Alternatively, it can be installed via
+@url{http://www.cliki.net/ASDF-Install,ASDF-Install}:
+
+@smalllisp
+(asdf-install:install "http://www.foldr.org/~michaelw/projects/cl-dot/cl-dot.tar.gz")
+@end smalllisp
+
+@noindent
+or simply (via @url{http://cliki.net/,CLiki})
+
+@lisp
+(asdf-install:install :cl-dot)
+@end lisp
+
+@noindent
+A @url{http://subversion.tigris.org/,Subversion} repository is available
+at @url{http://svn.foldr.org/~michaelw/cl-dot/}.
+
+The current version is@tie{}@value{VERSION}.
+
+@section External Dependencies
+
+CL-DOT has no dependencies on other
+@url{http://weitz.de/packages.html,systems}, but it requires the
+@url{http://www.graphviz.org/,GraphViz} suite to be installed for
+rendering.
+
+@c -----------------------------------------------------------------
+@node Usage
+@chapter Usage
+
+First, we define methods for the generic functions in the
+@code{GRAPH-OBJECT} protocol (@pxref{The GRAPH-OBJECT Protocol}) for all
+objects that can appear in our graph.  @coderef{graph-object-node} must
+be defined for all objects, the others have a default implementation.
+For example:
+
+@smalllisp
+;; @r{Conses}
+(defmethod @pcoderef{cl-dot,graph-object-node} ((graph (eql 'example)) (object cons))
+  (make-instance '@pcoderef{cl-dot,node}
+                 :attributes '(:label "cell \\N"
+                               :shape :box)))
+
+(defmethod @pcoderef{cl-dot,graph-object-points-to} ((graph (eql 'example)) (object cons))
+  (list (car object)
+        (make-instance '@pcoderef{cl-dot,attributed}
+                       :object (cdr object)
+                       :attributes '(:weight 3))))
+;; @r{Symbols}
+(defmethod @pcoderef{cl-dot,graph-object-node} ((graph (eql 'example)) (object symbol))
+  (make-instance '@pcoderef{cl-dot,node}
+                 :attributes `(:label ,object
+                               :shape :hexagon
+                               :style :filled
+                               :color :black
+                               :fillcolor "#ccccff")))
+@end smalllisp
+
+Note that in this example, the first argument to all @code{GRAPH-OBJECT}
+functions, @var{graph}, is only used to segregate the rendering of cons
+cells from those of other uses of CL-DOT.  However, it could also be
+used to look up node information which is stored external to
+@var{object}.
+
+A call to @coderef{generate-graph-from-roots} generates a graph object for
+our data.  From the graph object, we can either generate dot-format
+output to some stream with @coderef{print-graph}, or call dot directly on
+the data with @coderef{dot-graph}.  For example:
+
+@lisp
+(let* ((data '(a b c #1=(b z) c d #1#))
+       (dgraph (@pcoderef{cl-dot,generate-graph-from-roots} 'example (list data))))
+  (@pcoderef{cl-dot,dot-graph} dgraph "test.png" :format :png))
+@end lisp
+
+@noindent
+We can also specify attributes for the whole graph:
+
+@lisp
+(let* ((data '(a b c #1=(b z) c d #1#))
+       (dgraph (@pcoderef{cl-dot,generate-graph-from-roots} 'example (list data)
+                                                 '(:rankdir "LR"))))
+  (@pcoderef{cl-dot,dot-graph} dgraph "test-lr.png" :format :png))
+@end lisp
+
+@float Figure,fig:example-lr
+@center @image{test-lr,5.5in,,Dot rendering of a graph}
+@caption{Graph of conses @code{(A B C #1=(B Z) C D #1#)}, generated by
+@code{@coderef{dot-graph}} with attributes @code{(:RANKDIR "LR")}}
+@end float
+
+@need 900
+In order to render an undirected graph we can call @coderef{dot-graph}
+in the following way:
+
+@lisp
+(@pcoderef{cl-dot,dot-graph} dgraph "test.png"
+                  :format :png
+                  :directed nil)
+@end lisp
+
+@anchor{exampleundir}
+@float Figure,fig:example-undir
+@center @image{test-undir,,4.75in,Dot rendering of an undirected graph}
+@caption{Graph of conses @code{(A B C #1=(B Z) C D #1#)}, generated by
+@code{@coderef{dot-graph}} with option @w{@code{@keyword{:directed} nil}}}
+@end float
+
+When the @var{directed} keyword argument is set to @code{NIL} (the
+default value is @code{T}) @coderef{dot-graph} outputs an undirected
+graph instead of a directed.  To do that it needs the @command{neato}
+program from the Graphviz package, which is used to layout undirected
+graphs.  The path to the @command{neato} program is stored in the
+@coderef{*neato-path*} special variable.
+
+Note that @command{neato} will not automatically fold duplicate edges.
+I.e., an edge from node @var{a} to node @var{b} and another from @var{b}
+to @var{a} will both end up being part of the graph.
+
+@c -----------------------------------------------------------------
+@node Limitations
+@chapter Limitations
+
+Not all of the functionality of the GraphViz suite is accessible from
+CL-DOT.  Patches which add more features are highly welcome.
+
+@c -----------------------------------------------------------------
+@node The CL-DOT Package
+@chapter The CL-DOT Package
+
+@menu
+* Variables::
+* The GRAPH-OBJECT Protocol::
+* Generating Output::
+* Classes::
+* Deprecated Functionality::
+@end menu
+
+@c -----------------------------------------------------------------
+@node Variables
+@section Variables
+
+@anchor{*dot-path*}
+@anchor{*neato-path*}
+@defvr {Special Variable} *dot-path*
+@defvrx {Special Variable} *neato-path*
+
+Path to the @command{dot} and @command{neato} command, both from the
+@url{http://www.graphviz.org/,GraphViz} suite.
+@end defvr
+
+@c -----------------------------------------------------------------
+@node The GRAPH-OBJECT Protocol
+@section The @code{GRAPH-OBJECT} Protocol
+
+The @code{GRAPH-OBJECT} protocol is used to translate Lisp data into a
+graph representation suitable for rendering with the Dot
+program.
+
+All protocol functions take as first parameter a @emph{context} object
+@var{graph}.  This allows to render objects like cons cells differently
+for different graphs.
+
+Another use of the @var{graph} parameter is to look up node information
+needed for rendering.  For example, if nodes are represented as integers
+and edges between nodes can be looked up in an external table, this
+table can be made accessible to the @code{GRAPH-OBJECT} functions via
+the @var{graph} parameter.
+
+@anchor{generate-graph-from-roots}
+@deffn {Generic Function} generate-graph-from-roots graph objects @
+                @keyword{&optional} attributes
+@deffnx {Method} generate-graph-from-roots @code{T} @code{T} @
+                @keyword{&optional} attributes
+
+Construct a @var{graph} with @var{attributes}, starting from
+@var{objects}.  Other functions of the @code{GRAPH-OBJECT} protocol are
+subsequently called on @var{objects} to discover other graph nodes and
+edges between them.
+@end deffn
+
+@anchor{graph-object-knows-of}
+@deffn {Generic Function} graph-object-knows-of graph object
+@deffnx {Method} graph-object-knows-of @code{T} @code{T}
+Returns a list of objects that @var{object} knows should be part of the
+graph, but which it has no direct connections to.
+
+The default method returns the empty list.
+@end deffn
+
+@anchor{graph-object-node}
+@deffn {Generic Function} graph-object-node graph object
+Returns a @coderef{node} instance for @var{object}, or @code{NIL}.  In the
+latter case the object will not be included in the constructed ouput,
+but it can still have an indirect effect via other protocol functions
+(e.g., @coderef{graph-object-knows-of}).  This function will only be called
+once for each object during the generation of a graph.
+@end deffn
+
+@anchor{graph-object-pointed-to-by}
+@deffn {Generic Function} graph-object-pointed-to-by graph object
+@deffnx {Method} graph-object-pointed-to-by @code{T} @code{T}
+Returns a list of objects to which the node of @var{object} should be
+connected.  The edges will be directed from the other objects to this
+one.  To assign Dot attributes to the generated edges, each object can
+optionally be wrapped in an instance of class @coderef{attributed}.
+
+The default method returns the empty list.
+@end deffn
+
+@anchor{graph-object-points-to}
+@deffn {Generic Function} graph-object-points-to graph object
+@deffnx {Method} graph-object-points-to @code{T} @code{T}
+Returns a list of objects to which the @coderef{node} of @var{object}
+should be connected.  The edges will be directed from @var{object} to
+the others.  To assign Dot attributes to the generated edges, each
+object can optionally be wrapped in an instance of class
+@coderef{attributed}.
+
+The default method returns the empty list.
+@end deffn
+
+@c -----------------------------------------------------------------
+@node Generating Output
+@section Generating Output
+
+@anchor{dot-graph}
+@defun dot-graph graph outfile @keyword{&key} format directed
+Renders @var{graph} (an instance of @code{graph}, @pxref{graph,Classes}) to
+@var{outfile}, by running the program in either @coderef{*dot-path*} or
+@coderef{*neato-path*}.
+
+When @var{directed} is @code{T} (the default) it will use the program
+specified in @coderef{*dot-path*} to render a directed graph.  Otherwise,
+(when @var{directed} is @code{NIL}) @coderef{dot-graph} will render an
+undirected graph using the program specified in @coderef{*neato-path*}.
+
+The default @var{format} is Postscript.
+@end defun
+
+@anchor{print-graph}
+@defun print-graph graph @keyword{&optional} stream
+Prints a dot-format representation of @var{graph} (an instance of
+@code{graph}, @pxref{graph, Classes}) to @var{stream}.
+@end defun
+
+@c -----------------------------------------------------------------
+@node Classes
+@section Classes
+
+@anchor{graph}
+@deftp {Standard Class} graph
+A graph suitable for rendering with the Dot command.  Instance
+of this class are most often generated with
+@code{generate-graph-from-roots} (@pxref{generate-graph-from-roots,The
+GRAPH-OBJECT Protocol}) or
+@code{generate-graph} (@pxref{generate-graph, The Object Protocol}).
+@end deftp
+
+@anchor{node}
+@deftp {Standard Class} node @initarg{attributes} @initarg{id}
+A graph node with dot attributes (a @dfn{plist}, initarg
+@var{attributes}) and an optional dot id (initarg @var{id},
+auto-generated by default).
+@end deftp
+
+@anchor{attributed}
+@deftp {Standard Class} attributed @initarg{object} @initarg{attributes}
+Wraps an object (initarg @var{object}) with Dot attribute
+information (a @dfn{plist}, initarg @var{attributes}).
+@end deftp
+
+@c -----------------------------------------------------------------
+@node Deprecated Functionality
+@section Deprecated Functionality
+
+The @code{OBJECT} protocol has been deprecated in favor of the more
+general @code{GRAPH-OBJECT} protocol (@pxref{The GRAPH-OBJECT
+Protocol}), which allows objects to be presented differently for
+different graphs.  For backwards compatibility, the @code{OBJECT}
+protocol functions are called by their respective @code{GRAPH-OBJECT}
+equivalents when @coderef{generate-graph} is used.
+
+@subsection The @code{OBJECT} Protocol
+
+@anchor{generate-graph}
+@deffn {Generic Function} generate-graph object @keyword{&optional} attributes
+@deffnx {Method} generate-graph @code{T} @keyword{&optional} attributes
+Construct a @var{graph} with @var{attributes} starting from
+@var{object}, using the @code{OBJECT} protocol.
+
+The default method calls @coderef{generate-graph-from-roots} with a
+singleton list of @var{object}.
+@end deffn
+
+@anchor{object-knows-of}
+@deffn {Generic Function} object-knows-of object
+@deffnx {Method} object-knows-of @code{T}
+The default method returns the empty list.
+@end deffn
+
+@anchor{object-node}
+@deffn {Generic Function} object-node object
+Returns a @coderef{node} instance for @var{object}, or @code{NIL}.  In
+the latter case the object will not be included in the constructed
+ouput, but it can still have an indirect effect via other protocol
+functions (e.g., @coderef{object-knows-of}).  This function will only be
+called once for each object during the generation of a graph.
+@end deffn
+
+@anchor{object-pointed-to-by}
+@deffn {Generic Function} object-pointed-to-by object
+@deffnx {Method} object-pointed-to-by @code{T}
+The default method returns the empty list.
+@end deffn
+
+@anchor{object-points-to}
+@deffn {Generic Function} object-points-to object
+@deffnx {Method} object-points-to @code{T}
+The default method returns the empty list.
+@end deffn
+
+
+@c -----------------------------------------------------------------
+@node Support
+@chapter Feedback and Support
+
+Please direct bug reports, patches, questions, and any other feedback to
+@email{michaelw@@foldr.org,Michael Weber}.
+A small check list helps to stream-line the process of submitting
+patches:@footnote{lifted from @url{http://weitz.de/patches.html}}
+@itemize @bullet
+@item When sending bug reports, please include a small test case.
+
+@item Please send patches in @dfn{unified} format.  They can be created
+with @command{diff -u @dots{}}, for example.
+
+@item Do not use @key{TAB} characters for indentation.
+
+@item Every new function you add should have a reasonable documentation
+string. If you change an existing function, change its docstring as well
+if necessary.  The same applies to global variables, classes, class
+slots, and everything else you can attach a docstring to.
+
+@item If your patch is exporting new functionality or changing
+exported functionality, please update the library's documentation as
+well.
+
+@item If you modify existing behavior, always try to be backwards
+compatible or to at least provide a simple transition path for users of
+previous releases.
+@end itemize
+
+@c -----------------------------------------------------------------
+@node Related Software
+@chapter Related Software
+
+The following Lisp projects provide similar functionality:
+@table @cliki
+@item cl-graph
+This library has built-in support for the Dot output format.  If we
+start out with CL-GRAPH data structures, this is probably the easiest
+way to render them to Dot.
+@item cl-graphviz
+This project provides a @cliki{CFFI} bindings to GraphViz.  It provides
+richer access to (low-level) GraphViz functionality than CL-DOT.  Also,
+it ties in with @cliki{cl-graph}.
+
+Quoting the main developer,
+Attila Lendvai:@footnote{Message-Id: @url{http://groups.google.com/group/comp.lang.lisp/msg/f6da031aa1a3faf7,<49d30481-63ee-475e-be17-07cc684f2a56@@w34g2000hsg.googlegroups.com>}}
+@quotation
+``[@dots{}] if you only want to layout a few graphs from the repl then 
+trivial-shell and the utils in cl-graph are your friends to exec the 
+dot binary. cl-graphviz only helps if you want to have a web service 
+or something and want to avoid exec'ing.''
+@end quotation
+@item s-dot
+This library allows to translate graphs specified in @dfn{s-expressions}
+to the Dot format, and also render them by calling the @command{dot}
+command.
+@end table
+
+@c -----------------------------------------------------------------
+@node Copying
+@chapter Copying
+@insertcopying
+
+@c -----------------------------------------------------------------
+@node Indices
+@unnumbered Indices
+
+@menu
+* Variable Index::
+* Function Index::
+* Class Index::
+@c * Concept Index::
+@end menu
+
+@c -----------------------------------------------------------------
+@node Variable Index
+@unnumberedsec Variable Index
+
+@printindex vr
+
+@c -----------------------------------------------------------------
+@node Function Index
+@unnumberedsec Function Index
+@printindex fn
+
+@c -----------------------------------------------------------------
+@node Class Index
+@unnumberedsec Class Index
+@printindex tp
+
+@c -----------------------------------------------------------------
+@c @node Concept Index,  , Class Index, Indices
+@c @unnumberedsec Concept Index
+
+@c @printindex cp
+
+@c -----------------------------------------------------------------
+@bye
+
+Local Variables:
+mode: texinfo
+TeX-master: t
+End:
