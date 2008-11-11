@@ -119,36 +119,36 @@ FORMAT is Postscript."
   (let ((dot-path (if directed *dot-path* *neato-path*)))
     #+sbcl
     (let ((dot-string (with-output-to-string (stream)
-			(print-graph graph
-				     :stream stream
-				     :directed directed))))
+                        (print-graph graph
+                                     :stream stream
+                                     :directed directed))))
       (sb-ext:run-program dot-path
-			  (list (format nil "-T~(~a~)" format) "-o" outfile)
-			  :input (make-string-input-stream dot-string)
-			  :output *standard-output*))
+                          (list (format nil "-T~(~a~)" format) "-o" outfile)
+                          :input (make-string-input-stream dot-string)
+                          :output *standard-output*))
     #+allegro
     (excl.osi:with-command-io
-	((format nil "~A -T~(~a~) -o ~A" dot-path format outfile))
+        ((format nil "~A -T~(~a~) -o ~A" dot-path format outfile))
       (:input (dot-stream)
-	      (print-graph graph
-			   :stream dot-stream
-			   :directed directed)))
+              (print-graph graph
+                           :stream dot-stream
+                           :directed directed)))
     #+lispworks
     (with-open-stream
-	(dot-stream (sys:open-pipe (format nil "~A -T~(~a~) -o ~A"
-					   dot-path format outfile)
-				   :direction :input))
+        (dot-stream (sys:open-pipe (format nil "~A -T~(~a~) -o ~A"
+                                           dot-path format outfile)
+                                   :direction :input))
       (print-graph graph
-		   :stream dot-stream
-		   :directed directed)
+                   :stream dot-stream
+                   :directed directed)
       (force-output dot-stream))
     #+clisp
     (with-open-stream (out (ext:make-pipe-output-stream
-			    (format nil "~A -T~(~a~) -o ~A"
-				    dot-path format outfile)))
+                            (format nil "~A -T~(~a~) -o ~A"
+                                    dot-path format outfile)))
       (print-graph graph
-		   :stream out
-		   :directed directed))
+                   :stream out
+                   :directed directed))
     #-(or sbcl lispworks allegro clisp)
     (error "Don't know how to execute a program on this platform")))
 
