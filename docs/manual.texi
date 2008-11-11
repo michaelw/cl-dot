@@ -262,14 +262,14 @@ For example:
 
 Note that in this example, the first argument to all @code{GRAPH-OBJECT}
 functions, @var{graph}, is only used to segregate the rendering of cons
-cells from those of other uses of CL-DOT.  However, it could also be
-used to look up node information which is stored external to
+cells and symbols from those of other uses of CL-DOT.  However, it could
+also be used to look up node information which is stored external to
 @var{object}.
 
-A call to @coderef{generate-graph-from-roots} generates a graph object for
-our data.  From the graph object, we can either generate dot-format
-output to some stream with @coderef{print-graph}, or call dot directly on
-the data with @coderef{dot-graph}.  For example:
+A call to @coderef{generate-graph-from-roots} generates an instance of
+@coderef{graph} for our data.  From this graph instance, we can either
+generate dot-format output to some stream with @coderef{print-graph}, or
+call dot directly on the data with @coderef{dot-graph}.  For example:
 
 @lisp
 (let* ((data '(a b c #1=(b z) c d #1#))
@@ -350,7 +350,7 @@ CL-DOT.  Patches which add more features are highly welcome.
 @defvr {Special Variable} *dot-path*
 @defvrx {Special Variable} *neato-path*
 
-Path to the @command{dot} and @command{neato} command, both from the
+Path to the @command{dot} and @command{neato} commands, both from the
 @url{http://www.graphviz.org/,GraphViz} suite.
 @end defvr
 
@@ -379,9 +379,9 @@ the @var{graph} parameter.
                 @keyword{&optional} attributes
 
 Construct a @var{graph} with @var{attributes}, starting from
-@var{objects}.  Other functions of the @code{GRAPH-OBJECT} protocol are
-subsequently called on @var{objects} to discover other graph nodes and
-edges between them.
+@var{objects} (a sequence).  Other functions of the @code{GRAPH-OBJECT}
+protocol are subsequently called on @var{objects} to discover other
+graph nodes and edges between them.
 @end deffn
 
 @anchor{graph-object-knows-of}
@@ -395,11 +395,11 @@ The default method returns the empty list.
 
 @anchor{graph-object-node}
 @deffn {Generic Function} graph-object-node graph object
-Returns a @coderef{node} instance for @var{object}, or @code{NIL}.  In the
-latter case the object will not be included in the constructed ouput,
-but it can still have an indirect effect via other protocol functions
-(e.g., @coderef{graph-object-knows-of}).  This function will only be called
-once for each object during the generation of a graph.
+Returns a @coderef{node} instance for @var{object}, or @code{NIL}.  In
+the latter case the object will not be included in the constructed
+ouput, but it can still have an indirect effect via other protocol
+functions (e.g., @coderef{graph-object-knows-of}).  This function will
+only be called once for each object during the generation of a graph.
 @end deffn
 
 @anchor{graph-object-pointed-to-by}
@@ -407,7 +407,9 @@ once for each object during the generation of a graph.
 @deffnx {Method} graph-object-pointed-to-by @code{T} @code{T}
 Returns a list of objects to which the node of @var{object} should be
 connected.  The edges will be directed from the other objects to this
-one.  To assign Dot attributes to the generated edges, each object can
+one.
+
+To assign Dot attributes to the generated edges, each object can
 optionally be wrapped in an instance of class @coderef{attributed}.
 
 The default method returns the empty list.
@@ -418,9 +420,10 @@ The default method returns the empty list.
 @deffnx {Method} graph-object-points-to @code{T} @code{T}
 Returns a list of objects to which the @coderef{node} of @var{object}
 should be connected.  The edges will be directed from @var{object} to
-the others.  To assign Dot attributes to the generated edges, each
-object can optionally be wrapped in an instance of class
-@coderef{attributed}.
+the others.
+
+To assign Dot attributes to the generated edges, each object can
+optionally be wrapped in an instance of class @coderef{attributed}.
 
 The default method returns the empty list.
 @end deffn
@@ -503,8 +506,8 @@ The value of @var{node-attribute} must be a single node attribute,
 @item :fontname @var{text}
 @item :fontsize @var{integer}
 @item :height @var{integer}
-@item :label @var{text} @anchor{node-attr-label}
-Provide a label for node.  The string @var{text} may include
+@item :label @var{label} @anchor{node-attr-label}
+Provide a label for node.  The string @var{label} may include
 escaped newlines @samp{\l}, @samp{\n}, or @samp{\r} for left, center,
 and right justified lines.  The string @samp{\N} will be replaced by
 the node name.
@@ -513,11 +516,11 @@ Note that verbatim backslashes inside of Lisp strings must be escaped
 themselves.  E.g., the attribute @code{:label "Node \\N\\l"} produces a
 left-justified node label which includes the node identifier.
 
-By default, lines (ended by a @code{#\Newline} character)
-contained in @var{text} are horizontally centered in Dot output.
-However, if @var{text} is a list @code{(@var{alignment} @var{text})},
-then @var{alignment} specifies how lines in string @var{text} are
-rendered.  @var{alignment} can be one of @code{:left}, @code{:center},
+By default, @code{#\Newline}-delimited lines contained in @var{label}
+are horizontally centered in Dot output.  However, if the value of
+@var{label} is a list @code{(@var{alignment} @var{text})}, then
+@var{alignment} specifies how lines in string @var{text} are rendered.
+@var{alignment} can be one of @code{:left}, @code{:center},
 @code{:right}.
 
 @item :layer @var{text}
@@ -632,8 +635,8 @@ identifier (initarg @var{id}, auto-generated by default).
 
 @anchor{attributed}
 @deftp {Standard Class} attributed @initarg{object} @initarg{attributes}
-Wraps an object (initarg @var{object}) with Dot attribute information (a
-@dfn{plist}, initarg @var{attributes}, @pxref{Dot Attributes}).
+Wraps an object (initarg @var{object}) with edge attribute information
+(a @dfn{plist}, initarg @var{attributes}, @pxref{Dot Attributes}).
 @xref{Usage}, for an example of how to use @code{attributed}.
 @end deftp
 
@@ -727,7 +730,7 @@ The following Lisp projects provide similar functionality:
 @item cl-graph
 This library has built-in support for the Dot output format.  If we
 start out with CL-GRAPH data structures, this is probably the easiest
-way to render them to Dot.
+way to render them with Dot.
 @item cl-graphviz
 This project provides a @cliki{CFFI} bindings to GraphViz.  It provides
 richer access to (low-level) GraphViz functionality than CL-DOT.  Also,
