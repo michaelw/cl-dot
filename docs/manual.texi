@@ -461,7 +461,7 @@ refer to the documentation of Dot.
 @item :center @var{integer}
 @item :color @var{text}
 @item :edge @var{edge-attribute}
-The value of @var{edge-attribute} mus a single edge attribute,
+The value of @var{edge-attribute} must be a single edge attribute,
 @pxref{Edge Attributes}.  For example:
 
 @example
