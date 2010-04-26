@@ -1,3 +1,11 @@
+2008-11-15  Michael Weber  <michaelw@foldr.org>
+
+	* docs/version.texi: Generate version from Git
+
+2008-11-11  Michael Weber  <michaelw@foldr.org>
+
+	* package.lisp: export *neato-path* 
+
 2008-11-09  Michael Weber  <michaelw@foldr.org>
 
 	* Released version 0.8.0

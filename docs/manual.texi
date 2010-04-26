@@ -16,8 +16,8 @@
 @c * hyperspec links to CL vocabulary
 @c * consider separate summary page, a la CFFI
 
-@set VERSION 0.8.0
 @set EDITION 1.0
+@include version.texi
 
 @copying
 This manual is for CL-DOT, version @value{VERSION}.
