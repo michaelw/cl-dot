@@ -151,6 +151,11 @@ div.node {
     width: inherit;
 }
 
+.float img[src="test-edges.png"] {
+    height: 2cm;
+    width: inherit;
+}
+
 /* Menus */
 /* ul.menu, */
 #master-menu {

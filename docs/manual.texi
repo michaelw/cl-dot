@@ -232,6 +232,18 @@ rendering.
 @node Usage
 @chapter Usage
 
+With CL-DOT, graphs can be constructed by starting from some
+@emph{nodes} and recursively tracing edges until all reachable nodes and
+edges have been added.
+
+@menu
+* Node-Centric Graph Generation::  
+* Edge-Centric Graph Generation::  
+@end menu
+
+@node Node-Centric Graph Generation
+@section Node-Centric Graph Generation
+
 First, we define methods for the generic functions in the
 @code{GRAPH-OBJECT} protocol (@pxref{The GRAPH-OBJECT Protocol}) for all
 objects that can appear in our graph.  @coderef{graph-object-node} must
@@ -322,6 +334,46 @@ I.e., an edge from node @var{a} to node @var{b} and another from @var{b}
 to @var{a} will both end up being part of the graph.
 
 @c -----------------------------------------------------------------
+@node Edge-Centric Graph Generation
+@section Edge-Centric Graph Generation
+
+If a graph is stored as an edge list, the use of
+@code{@coderef{graph-object-points-to}} is not a good match.  Instead,
+we can use @code{@coderef{graph-object-edges}} to return @emph{edge
+specifications} (@pxref{graph-object-edges, Edge Specifications}) all
+edges which are part of the graph.  For each object which appears as
+edge source or target, the appropriate functions of the
+@code{GRAPH-OBJECT} protocol are called.
+
+@lisp
+;; @r{Define how nodes are drawn}
+(defmethod @pcoderef{cl-dot,graph-object-node} ((graph (eql 'edge-example)) object)
+  (make-instance '@pcoderef{cl-dot,node}
+                 :attributes (list :label (format nil "Node ~A" object)
+                                   :shape :box
+                                   :style :filled
+                                   :color :black
+                                   :fillcolor "#ccccff")))
+
+;; @r{Edges and their attributes}
+(defmethod @pcoderef{cl-dot,graph-object-edges} ((graph (eql 'edge-example)))
+  #((a b (:color :red    :style :dashed))
+    (b c (:color :blue   :style :dotted))
+    (c a (:color :yellow :style :bold))))
+
+(let ((dgraph (@pcoderef{cl-dot,generate-graph-from-roots} 'edge-example '()
+                                                '(:rankdir "LR"))))
+  (@pcoderef{cl-dot,dot-graph} dgraph "test-edges.png" :format :png))
+@end lisp
+
+@anchor{example-edges}
+@float Figure,fig:example-edges
+@center @image{test-edges,,0.5in,Dot rendering via edges}
+@caption{Graph generated via @code{@coderef{graph-object-edges}}}
+@end float
+
+
+@c -----------------------------------------------------------------
 @node Limitations
 @chapter Limitations
 
@@ -362,7 +414,7 @@ The @code{GRAPH-OBJECT} protocol is used to translate Lisp data into a
 graph representation suitable for rendering with the Dot
 program.
 
-All protocol functions take as first parameter a @emph{context} object
+All protocol functions take as first parameter a @emph{context object}
 @var{graph}.  This allows to render objects like cons cells differently
 for different graphs.
 
@@ -384,13 +436,26 @@ protocol are subsequently called on @var{objects} to discover other
 graph nodes and edges between them.
 @end deffn
 
+@anchor{graph-object-edges}
+@deffn {Generic Function} graph-object-edges graph
+@deffnx {Method} graph-object-edges @code{T}
+Returns a sequence of @emph{edge specifications}.
+
+An @dfn{edge specification} is a list @code{(@var{from} @var{to}
+[@var{attributes}])}, where @var{from} and @var{to} are objects of the
+graph and optional @var{attributes} is a @dfn{plist} of edge attributes,
+@pxref{Edge Attributes}.
+
+The default method returns an empty sequence.
+@end deffn
+
 @anchor{graph-object-knows-of}
 @deffn {Generic Function} graph-object-knows-of graph object
 @deffnx {Method} graph-object-knows-of @code{T} @code{T}
-Returns a list of objects that @var{object} knows should be part of the
-graph, but which it has no direct connections to.
+Returns a sequence of objects that @var{object} knows should be part of
+the graph, but which it has no direct connections to.
 
-The default method returns the empty list.
+The default method returns an empty sequence.
 @end deffn
 
 @anchor{graph-object-node}
@@ -405,27 +470,27 @@ only be called once for each object during the generation of a graph.
 @anchor{graph-object-pointed-to-by}
 @deffn {Generic Function} graph-object-pointed-to-by graph object
 @deffnx {Method} graph-object-pointed-to-by @code{T} @code{T}
-Returns a list of objects to which the node of @var{object} should be
-connected.  The edges will be directed from the other objects to this
+Returns a sequence of objects to which the node of @var{object} should
+be connected.  The edges will be directed from the other objects to this
 one.
 
 To assign Dot attributes to the generated edges, each object can
 optionally be wrapped in an instance of class @coderef{attributed}.
 
-The default method returns the empty list.
+The default method returns an empty sequence.
 @end deffn
 
 @anchor{graph-object-points-to}
 @deffn {Generic Function} graph-object-points-to graph object
 @deffnx {Method} graph-object-points-to @code{T} @code{T}
-Returns a list of objects to which the @coderef{node} of @var{object}
-should be connected.  The edges will be directed from @var{object} to
-the others.
+Returns a sequence of objects to which the @coderef{node} of
+@var{object} should be connected.  The edges will be directed from
+@var{object} to the others.
 
 To assign Dot attributes to the generated edges, each object can
 optionally be wrapped in an instance of class @coderef{attributed}.
 
-The default method returns the empty list.
+The default method returns an empty sequence.
 @end deffn
 
 @c -----------------------------------------------------------------
@@ -433,8 +498,9 @@ The default method returns the empty list.
 @section Dot Attributes
 
 The rendering of Dot graphs, their nodes and edges can be influenced by
-@dfn{attributes}.  Attributes are represented as @dfn{keywords} of the
-same name.  Multiple attributes can be given in form of a @dfn{plist}.
+@dfn{Dot attributes}.  Attributes are represented as @dfn{keywords} of
+the same name.  Multiple attributes can be given in form of a
+@dfn{plist}.
 
 CL-DOT supports most Dot attributes, a detailed list follows.
 Attributes which are not recognized result in an @dfn{error} when

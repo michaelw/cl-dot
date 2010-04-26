@@ -1,5 +1,10 @@
 2008-11-15  Michael Weber  <michaelw@foldr.org>
 
+	* cl-dot.lisp (graph-object-edges): new generic function
+	
+	(construct-graph): Allow GRAPH-OBJECT functions to return
+	sequences instead of lists
+
 	* docs/version.texi: Generate version from Git
 
 2008-11-11  Michael Weber  <michaelw@foldr.org>

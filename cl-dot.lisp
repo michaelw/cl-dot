@@ -43,53 +43,69 @@ information (a plist, initarg :ATTRIBUTES)"))
 
 (defgeneric graph-object-node (graph object)
   (:documentation
-   "Return a NODE instance for this object, or NIL. In the latter case
-the object will not be included in the graph, but it can still have an
-indirect effect via other protocol functions (e.g. GRAPH-OBJECT-KNOWS-OF).
-This function will only be called once for each object during the
-generation of a graph.")
+   "Returns a NODE instance for this object, or NIL. 
+
+In the latter case the object will not be included in the graph, but
+it can still have an indirect effect via other protocol
+functions (e.g. GRAPH-OBJECT-KNOWS-OF).  This function will only be
+called once for each object during the generation of a graph.")
   (:method ((graph (eql 'default)) object)
     (declare (ignore graph))
     (object-node object)))
 
+(defgeneric graph-object-edges (graph)
+  (:documentation
+   "Returns a sequence of edge specifications.
+
+An edge specification is a list (FROM TO [ATTRIBUTES]), where FROM and
+TO are objects of the graph and optional ATTRIBUTES is a plist of edge
+attributes.")
+  (:method (graph)
+    (declare (ignore graph))
+    '()))
+
 (defgeneric graph-object-points-to (graph object)
   (:documentation
-   "Return a list of objects to which the NODE of this object should be
-connected. The edges will be directed from this object to the others.
-To assign dot attributes to the generated edges, each object can optionally
-be wrapped in a instance of ATTRIBUTED.")
+   "Returns a sequence of objects to which the NODE of this object
+should be connected. 
+
+The edges will be directed from this object to the others.  To assign
+dot attributes to the generated edges, each object can optionally be
+wrapped in a instance of ATTRIBUTED.")
   (:method ((graph (eql 'default)) object)
     (declare (ignore graph))
     (object-points-to object))
   (:method (graph (object t))
-    nil))
+    '()))
 
 (defgeneric graph-object-pointed-to-by (graph object)
   (:documentation
-   "Return a list of objects to which the NODE of this object should be
-connected. The edges will be directed from the other objects to this
-one. To assign dot attributes to the generated edges, each object can
+   "Returns a sequence of objects to which the NODE of this object
+should be connected. 
+
+The edges will be directed from the other objects to this one. To
+assign dot attributes to the generated edges, each object can
 optionally be wrapped in a instance of ATTRIBUTED.")
   (:method ((graph (eql 'default)) object)
     (declare (ignore graph))
     (object-pointed-to-by object))
   (:method (graph (object t))
-    nil))
+    '()))
 
 (defgeneric graph-object-knows-of (graph object)
   (:documentation
-   "Return a list of objects that this object knows should be part of the
-graph, but which it has no direct connections to.")
+   "Returns a sequence of objects that this object knows should be
+part of the graph, but which it has no direct connections to.")
   (:method ((graph (eql 'default)) object)
     (declare (ignore graph))
     (object-knows-of object))
   (:method (graph (object t))
-    nil))
+    '()))
 
 ;;; Public interface
 
 (defgeneric generate-graph-from-roots (graph objects &optional attributes)
-  (:documentation "Construct a GRAPH with ATTRIBUTES starting
+  (:documentation "Constructs a GRAPH with ATTRIBUTES starting
 from OBJECTS, using the GRAPH-OBJECT- protocol.")
   (:method (graph objects &optional attributes)
     (multiple-value-bind (nodes edges)
@@ -101,7 +117,7 @@ from OBJECTS, using the GRAPH-OBJECT- protocol.")
 
 (defun print-graph (graph &rest options
                     &key (stream *standard-output*) (directed t))
-  "Print a dot-format representation GRAPH to STREAM."
+  "Prints a dot-format representation GRAPH to STREAM."
   (declare (ignore stream directed))
   (apply #'generate-dot
          (nodes-of graph)
@@ -193,15 +209,29 @@ FORMAT is Postscript."
                    (map nil #'handle-object pointed-to)
                    (when node
                      (push node nodes)
-                     (dolist (to points-to)
-                       (let ((target (get-node to)))
-                         (when target
-                           (add-edge node target (get-attributes to)))))
-                     (dolist (from pointed-to)
-                       (let ((source (get-node from)))
-                         (when source
-                           (add-edge source node (get-attributes from))))))))))
+                     (map nil
+                          (lambda (to)
+                            (let ((target (get-node to)))
+                              (when target
+                                (add-edge node target (get-attributes to)))))
+                          points-to)
+                     (map nil
+                          (lambda (from)
+                            (let ((source (get-node from)))
+                              (when source
+                                (add-edge source node (get-attributes from)))))
+                          pointed-to)))))
+             (handle-edge (from to &optional attributes)
+               (handle-object from)
+               (handle-object to)
+               (let ((source (get-node from))
+                     (target (get-node to)))
+                 (add-edge source target attributes))))
       (map nil #'handle-object objects)
+      (map nil
+           (lambda (edge-spec)
+             (apply #'handle-edge edge-spec))
+           (graph-object-edges graph))
       (values nodes edges))))
 
 (defun generate-dot (nodes edges attributes

@@ -12,7 +12,7 @@ SPLIT = --no-split
 MAKEINFO_FLAGS = --html --css-ref style.css --no-number-sections $(SPLIT)
 
 manual_SOURCES = manual.texi version.texi $(manual_EXTRA_SOURCES)
-manual_EXTRA_SOURCES = test.png test-lr.png test-undir.png
+manual_EXTRA_SOURCES = test.png test-lr.png test-undir.png test-edges.png
 dist_DATA = cl-dot.html manual.pdf style.css $(manual_EXTRA_SOURCES)
 
 
