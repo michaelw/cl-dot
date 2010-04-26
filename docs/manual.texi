@@ -329,9 +329,9 @@ program from the Graphviz package, which is used to layout undirected
 graphs.  The path to the @command{neato} program is stored in the
 @coderef{*neato-path*} special variable.
 
-Note that @command{neato} will not automatically fold duplicate edges.
-I.e., an edge from node @var{a} to node @var{b} and another from @var{b}
-to @var{a} will both end up being part of the graph.
+@c Note that @command{neato} will not automatically fold duplicate edges.
+@c I.e., an edge from node @var{a} to node @var{b} and another from @var{b}
+@c to @var{a} will both end up being part of the graph.
 
 @c -----------------------------------------------------------------
 @node Edge-Centric Graph Generation

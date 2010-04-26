@@ -179,14 +179,7 @@ FORMAT is Postscript."
                                           :attributes attributes
                                           :source source
                                           :target target)))
-                 (pushnew edge edges
-                          :test (lambda (a b)
-                                  (and (eq (source-of a)
-                                           (source-of b))
-                                       (eq (target-of a)
-                                           (target-of b))
-                                       (equal (attributes-of a)
-                                              (attributes-of b)))))))
+                 (push edge edges)))
              (get-node (object)
                (if (typep object 'attributed)
                    (get-node (object-of object))
