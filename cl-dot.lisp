@@ -3,14 +3,14 @@
 (defvar *dot-path*
   #+(or win32 mswindows) "\"C:/Program Files/ATT/Graphviz/bin/dot.exe\""
   #-(or win32 mswindows) "/usr/bin/dot"
-  "Path to `dot`")
+  "Path to the dot command")
 
 ;; the path to the neato executable (used for drawing undirected
 ;; graphs). 
 (defvar *neato-path*
   #+(or win32 mswindows) "\"C:/Program Files/ATT/Graphviz/bin/neato.exe\""
   #-(or win32 mswindows) "/usr/bin/neato"
-  "Path to `neato`")
+  "Path to the neato command")
 
 ;;; Classes
 
