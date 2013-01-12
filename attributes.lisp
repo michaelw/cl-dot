@@ -18,6 +18,8 @@
     (:nslimit float)
     (:mclimit float)
     (:layers text)
+    (:fontsize integer)
+    (:fontname text)
     (:color text)
     (:bgcolor text)))
 
