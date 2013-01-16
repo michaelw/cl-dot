@@ -1,11 +1,11 @@
-                                                             -*- outline -*-
-* Description
-
+CL-DOT
+======
 CL-DOT is a small package for easily generating dot (a program in the
 GraphViz suite) output from arbitrary Lisp data.
 
-* Build
 
+Building
+--------
 Presuming ASDF is available:
 
     (asdf:oos 'asdf:load-op :cl-dot)
@@ -13,19 +13,23 @@ Presuming ASDF is available:
 Depending on the Lisp being used, a (require :cl-dot) might do as
 well.
 
-* Documentation
 
+Documentation
+-------------
 See directory docs/
 
-* Licence
 
+Licence
+-------
 See file COPYING.
 
-* Canonical Download
 
-http://cliki.net/cl-dot
+Canonical Download
+------------------
+http://foldr.org/~michaelw/projects/cl-dot/
 
-* Authors
 
+Authors
+-------
 Juho Snellman <jsnell@iki.fi>
 Michael Weber <michaelw@foldr.org> (current maintainer)

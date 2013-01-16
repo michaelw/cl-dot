@@ -20,7 +20,7 @@
 @include version.texi
 
 @copying
-This manual is for CL-DOT, version @value{VERSION}.
+This manual is for CL-DOT, version@tie{}@value{VERSION}.
 
 Copyright @copyright{} 2005 Juho Snellman @*
 Copyright @copyright{} 2007,2008 Michael Weber
@@ -138,8 +138,8 @@ code is covered by the MIT license, @pxref{Copying}.
 This manual is also available in @url{manual.pdf,@acronym{PDF} format}.
 
 @quotation
-@strong{Download shortcut:}
-@url{http://www.foldr.org/~michaelw/projects/cl-dot/cl-dot.tar.gz}
+@strong{Source Download shortcut:}
+@url{http://github.com/michaelw/cl-dot}
 @end quotation
 @end ifhtml
 @end ifnottex
@@ -198,35 +198,28 @@ Dot Attributes
 
 CL-DOT together with this documentation can be downloaded from
 @quotation
-@url{http://www.foldr.org/~michaelw/projects/cl-dot/cl-dot.tar.gz}
+@url{http://www.foldr.org/~michaelw/projects/cl-dot/}
 @end quotation
 
-Alternatively, it can be installed via
-@url{http://www.cliki.net/ASDF-Install,ASDF-Install}:
-
-@smalllisp
-(asdf-install:install "http://www.foldr.org/~michaelw/projects/cl-dot/cl-dot.tar.gz")
-@end smalllisp
-
 @noindent
-or simply (via @url{http://cliki.net/,CLiki})
+It can be installed via
+@url{http://quicklisp.org/,QuickLisp}:
 
 @lisp
-(asdf-install:install :cl-dot)
+(ql:quickload "cl-dot")
 @end lisp
 
 @noindent
-A @url{http://subversion.tigris.org/,Subversion} repository is available
-at @url{http://svn.foldr.org/~michaelw/cl-dot/}.
-
-The current version is@tie{}@value{VERSION}.
+The source code is available via @url{http://github.com/,GitHub}:
+@url{http://github.com/michaelw/cl-dot}
 
 @section External Dependencies
 
 CL-DOT has no dependencies on other
 @url{http://weitz.de/packages.html,systems}, but it requires the
 @url{http://www.graphviz.org/,GraphViz} suite to be installed for
-rendering.
+rendering, and @url{http://www.gnu.org/software/texinfo/,GNU Texinfo}
+for preparing this documentation.
 
 @c -----------------------------------------------------------------
 @node Usage
