@@ -143,17 +143,7 @@ div.node {
 }
 
 .float img {
-    width: 100%;
-}
-
-.float img[src="test-undir.png"] {
-    height: 12cm;
-    width: inherit;
-}
-
-.float img[src="test-edges.png"] {
-    height: 2cm;
-    width: inherit;
+    max-width: 100%;
 }
 
 /* Menus */
