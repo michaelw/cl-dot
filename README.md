@@ -31,5 +31,5 @@ http://foldr.org/~michaelw/projects/cl-dot/
 
 Authors
 -------
-Juho Snellman <jsnell@iki.fi>
+Juho Snellman <jsnell@iki.fi>  
 Michael Weber <michaelw@foldr.org> (current maintainer)
