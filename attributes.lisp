@@ -29,7 +29,8 @@
     (:fixed-size boolean)
     (:label text)
     (:shape (:record :plaintext :ellipse :circle :egg :triangle :box
-             :diamond :trapezium :parallelogram :house :hexagon :octagon))
+             :diamond :trapezium :parallelogram :house :hexagon :octagon
+             :doubleoctagon))
     (:fontsize integer)
     (:fontname text)
     (:color text)
