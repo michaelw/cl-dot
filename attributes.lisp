@@ -1,3 +1,5 @@
+;; See http://www.graphviz.org/doc/info/attrs.html
+
 (in-package cl-dot)
 
 (defparameter *graph-attributes*
@@ -22,7 +24,10 @@
     (:fontsize integer)
     (:fontname text)
     (:color text)
-    (:bgcolor text)))
+    (:bgcolor text)
+    (:url text)
+    (:target text)
+    (:stylesheet text)))
 
 (defparameter *node-attributes*
   '((:height integer)
@@ -37,7 +42,9 @@
     (:color text)
     (:fillcolor text)
     (:style (:filled :solid :dashed :dotted :bold :invis))
-    (:layer text)))
+    (:layer text)
+    (:url text)
+    (:target text)))
 
 (defparameter *edge-attributes*
   '((:minlen integer)
@@ -68,4 +75,6 @@
     (:samehead boolean)
     (:sametail boolean)
     (:constraint boolean)
-    (:layer text)))
+    (:layer text)
+    (:url text)
+    (:target text)))

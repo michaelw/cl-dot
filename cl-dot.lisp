@@ -286,7 +286,9 @@ FORMAT is Postscript."
                   (textify value :alignment alignment)))
                (t
                 (textify value)))))
-      (format stream "~a=~a" (string-downcase key)
+      (format stream "~a=~a" (case key
+                               (:url key)
+                               (t    (string-downcase key)))
               (etypecase value-type
                 ((member integer)
                  (unless (typep value 'integer)
