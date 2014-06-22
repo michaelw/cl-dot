@@ -11,7 +11,7 @@
    (:file "attributes")
    (:file "cl-dot")
    (:file "deprecated")
-   (:static-file "README")
+   (:static-file "README.md")
    (:static-file "COPYING")
    (:static-file "ChangeLog")
    (:module "examples"
