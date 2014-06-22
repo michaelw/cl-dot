@@ -6,7 +6,7 @@
   "Path to the dot command")
 
 ;; the path to the neato executable (used for drawing undirected
-;; graphs). 
+;; graphs).
 (defvar *neato-path*
   #+(or win32 mswindows) "\"C:/Program Files/ATT/Graphviz/bin/neato.exe\""
   #-(or win32 mswindows) "/usr/bin/neato"
@@ -43,7 +43,7 @@ information (a plist, initarg :ATTRIBUTES)"))
 
 (defgeneric graph-object-node (graph object)
   (:documentation
-   "Returns a NODE instance for this object, or NIL. 
+   "Returns a NODE instance for this object, or NIL.
 
 In the latter case the object will not be included in the graph, but
 it can still have an indirect effect via other protocol
@@ -67,7 +67,7 @@ attributes.")
 (defgeneric graph-object-points-to (graph object)
   (:documentation
    "Returns a sequence of objects to which the NODE of this object
-should be connected. 
+should be connected.
 
 The edges will be directed from this object to the others.  To assign
 dot attributes to the generated edges, each object can optionally be
@@ -81,7 +81,7 @@ wrapped in a instance of ATTRIBUTED.")
 (defgeneric graph-object-pointed-to-by (graph object)
   (:documentation
    "Returns a sequence of objects to which the NODE of this object
-should be connected. 
+should be connected.
 
 The edges will be directed from the other objects to this one. To
 assign dot attributes to the generated edges, each object can
@@ -279,31 +279,72 @@ FORMAT is Postscript."
   (destructuring-bind (key value-type)
       (or (assoc key attributes)
           (error "Invalid attribute ~S" key))
-    (format stream "~a=~a" (string-downcase key)
-            (etypecase value-type
-              ((member integer)
-               (unless (typep value 'integer)
-                 (error "Invalid value for ~S: ~S is not an integer"
-                        key value))
-               value)
-              ((member boolean)
-               (if value
-                   "true"
-                   "false"))
-              ((member text)
-               (if (consp value)
-                   (destructuring-bind (alignment value) value
-                     (textify value :alignment alignment))
-                   (textify value)))
-              ((member float)
-               (coerce value 'single-float))
-              (list
-               (unless (member value value-type :test 'equal)
-                 (error "Invalid value for ~S: ~S is not one of ~S"
-                        key value value-type))
-               (if (symbolp value)
-                   (string-downcase value)
-                   value))))))
+    (flet ((text-value (value)
+             (typecase value
+               (cons
+                (destructuring-bind (alignment value) value
+                  (textify value :alignment alignment)))
+               (t
+                (textify value)))))
+      (format stream "~a=~a" (string-downcase key)
+              (etypecase value-type
+                ((member integer)
+                 (unless (typep value 'integer)
+                   (error "Invalid value for ~S: ~S is not an integer"
+                          key value))
+                 value)
+                ((member boolean)
+                 (if value
+                     "true"
+                     "false"))
+                ((member label-text)
+                 (typecase value
+                   ((cons (eql :html))
+                    (htmlify value))
+                   (t
+                    (text-value value))))
+                ((member text)
+                 (text-value value))
+                ((member float)
+                 (coerce value 'single-float))
+                (list
+                 (unless (member value value-type :test 'equal)
+                   (error "Invalid value for ~S: ~S is not one of ~S"
+                          key value value-type))
+                 (if (symbolp value)
+                     (string-downcase value)
+                     value)))))))
+
+(defun htmlify (object)
+  (check-type object (cons (eql :html) (cons null)))
+  (with-output-to-string (stream)
+    (labels
+        ((textify-node (node)
+           (typecase node
+             (cons
+              (destructuring-bind (name attributes &rest children) node
+                (format stream "<~A~@[ ~{~{~A=~S~^ ~}~}~]>"
+                        name attributes)
+                (mapc #'textify-node children)
+                (format stream "</~A>" name)))
+            (t
+             (loop :for c :across node :do
+                (case c
+                  (#\"
+                   (write-string "&quot;" stream))
+                  (#\<
+                   (write-string "&lt;" stream))
+                  (#\>
+                   (write-string "&gt;" stream))
+                  (#\&
+                   (write-string "&amp;" stream))
+                  (#\Newline
+                   (write-string "<br/>" stream))
+                  (t
+                   (write-char c stream))))))))
+      (write-char #\< stream)
+      (mapc #'textify-node (nthcdr 2 object))
+      (write-char #\> stream))))
 
 (defun textify (object &key alignment)
   (check-type alignment (member nil :center :left :right))

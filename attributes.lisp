@@ -1,7 +1,8 @@
 (in-package cl-dot)
 
 (defparameter *graph-attributes*
-  '((:size text)
+  '((:label label-text)
+    (:size text)
     (:page text)
     (:ratio (:fill :compress :auto)) ;; Could actually be a float number too
     (:margin float)
@@ -27,7 +28,7 @@
   '((:height integer)
     (:width integer)
     (:fixed-size boolean)
-    (:label text)
+    (:label label-text)
     (:shape (:record :plaintext :ellipse :circle :egg :triangle :box
              :diamond :trapezium :parallelogram :house :hexagon :octagon
              :doubleoctagon))
@@ -41,7 +42,7 @@
 (defparameter *edge-attributes*
   '((:minlen integer)
     (:weight integer)
-    (:label text)
+    (:label label-text)
     (:fontsize integer)
     (:fontname text)
     (:fontcolor text)
@@ -56,8 +57,8 @@
     (:arrowtail (:none :normal :inv :dot :odot :invdot :invodot :tee
                  :empty :invempty :open :halfopen :diamond :odiamond
                  :box :obox :crow))
-    (:headlabel text)
-    (:taillabel text)
+    (:headlabel label-text)
+    (:taillabel label-text)
     (:labelfontsize integer)
     (:labelfontname text)
     (:labelfontcolor text)
@@ -68,4 +69,3 @@
     (:sametail boolean)
     (:constraint boolean)
     (:layer text)))
-
