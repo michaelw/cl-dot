@@ -1,7 +1,10 @@
+;; See http://www.graphviz.org/doc/info/attrs.html
+
 (in-package cl-dot)
 
 (defparameter *graph-attributes*
-  '((:size text)
+  '((:label label-text)
+    (:size text)
     (:page text)
     (:ratio (:fill :compress :auto)) ;; Could actually be a float number too
     (:margin float)
@@ -21,13 +24,16 @@
     (:fontsize integer)
     (:fontname text)
     (:color text)
-    (:bgcolor text)))
+    (:bgcolor text)
+    (:url text)
+    (:target text)
+    (:stylesheet text)))
 
 (defparameter *node-attributes*
   '((:height integer)
     (:width integer)
     (:fixed-size boolean)
-    (:label text)
+    (:label label-text)
     (:shape (:record :plaintext :ellipse :circle :egg :triangle :box
              :diamond :trapezium :parallelogram :house :hexagon :octagon
              :doubleoctagon))
@@ -36,12 +42,14 @@
     (:color text)
     (:fillcolor text)
     (:style (:filled :solid :dashed :dotted :bold :invis))
-    (:layer text)))
+    (:layer text)
+    (:url text)
+    (:target text)))
 
 (defparameter *edge-attributes*
   '((:minlen integer)
     (:weight integer)
-    (:label text)
+    (:label label-text)
     (:fontsize integer)
     (:fontname text)
     (:fontcolor text)
@@ -56,8 +64,8 @@
     (:arrowtail (:none :normal :inv :dot :odot :invdot :invodot :tee
                  :empty :invempty :open :halfopen :diamond :odiamond
                  :box :obox :crow))
-    (:headlabel text)
-    (:taillabel text)
+    (:headlabel label-text)
+    (:taillabel label-text)
     (:labelfontsize integer)
     (:labelfontname text)
     (:labelfontcolor text)
@@ -67,5 +75,6 @@
     (:samehead boolean)
     (:sametail boolean)
     (:constraint boolean)
-    (:layer text)))
-
+    (:layer text)
+    (:url text)
+    (:target text)))
