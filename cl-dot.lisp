@@ -343,7 +343,7 @@ FORMAT is Postscript."
            (typecase node
              (cons
               (destructuring-bind (name attributes &rest children) node
-                (format stream "<~A~@[ ~{~{~A=~S~^ ~}~}~]>"
+                (format stream "<~A~@[ ~{~{~A=~S~}~^ ~}~]>"
                         name attributes)
                 (mapc #'textify-node children)
                 (format stream "</~A>" name)))
