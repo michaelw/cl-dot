@@ -14,7 +14,9 @@
     (:ranksep float)
     (:ordering (:out))
     (:rankdir ("LR" "RL" "BT"))
+    (:dir ("forward" "none"))
     (:pagedir text)
+    (:layout text) ;; neato, twopi, etc.
     (:rank (:same :min :max))
     (:rotate integer)
     (:center integer)
@@ -49,6 +51,7 @@
 (defparameter *edge-attributes*
   '((:minlen integer)
     (:weight integer)
+    (:arrowhead ("normal" "inv" "dot" "invdot" "odot" "invodot" "none" "tee" "empty" "invempty" "diamond" "odiamond" "ediamond" "crow" "box" "obox" "open" "halfopen" "vee" "circle"))
     (:label label-text)
     (:fontsize integer)
     (:fontname text)
