@@ -22,4 +22,4 @@
              (:static-file "sb-c-example" :pathname "sb-c-example.lisp")))
    (:module "docs"
             :components
-            ((:html-file "cl-dot.html")))))
+            ((:html-file "cl-dot")))))
