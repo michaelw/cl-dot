@@ -120,14 +120,8 @@ with the software or the use or other dealings in the software.}
 
 CL-DOT is a small package for easily generating Dot (a program in the
 @url{http://www.graphviz.org/,GraphViz} suite) output from arbitrary
-Lisp data.  It works with the following Common Lisp implementations:
-
-@itemize @bullet
-@item @url{http://www.franz.com/products/allegrocl/,Allegro CL@registeredsymbol{}}
-@item @url{http://clisp.cons.org/,@acronym{GNU} CLISP}
-@item @url{http://www.lispworks.com/,LispWorks}
-@item @url{http://www.sbcl.org/,@acronym{SBCL}}
-@end itemize
+Lisp data.  It should work with any Common Lisp implementation supported
+by @url{https://www.common-lisp.net/project/asdf/,@acronym{UIOP}}.
 
 Original author is @url{http://jsnell.iki.fi/,Juho Snellman}, current
 maintainer is @url{http://www.foldr.org/~michaelw/,Michael Weber}.  The
@@ -215,11 +209,12 @@ The source code is available via @url{http://github.com/,GitHub}:
 
 @section External Dependencies
 
-CL-DOT has no dependencies on other
-@url{http://weitz.de/packages.html,systems}, but it requires the
-@url{http://www.graphviz.org/,GraphViz} suite to be installed for
-rendering, and @url{http://www.gnu.org/software/texinfo/,GNU Texinfo}
-for preparing this documentation.
+The only @url{http://weitz.de/packages.html,systems} CL-DOT depends on
+is @url{https://www.common-lisp.net/project/asdf/,@acronym{UIOP}}. In
+addition, it requires the @url{http://www.graphviz.org/,GraphViz} suite
+to be installed for rendering, and
+@url{http://www.gnu.org/software/texinfo/,GNU Texinfo} for preparing
+this documentation.
 
 @c -----------------------------------------------------------------
 @node Usage

@@ -5,6 +5,7 @@
   :description "Generate Dot Output from Arbitrary Lisp Data"
   :author "Juho Snellman <jsnell@iki.fi>"
   :maintainer "Michael Weber <michaelw@foldr.org>"
+  :depends-on (:uiop)
   :serial t
   :components
   ((:file "package")
