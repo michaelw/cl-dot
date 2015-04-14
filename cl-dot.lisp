@@ -237,44 +237,47 @@ FORMAT is Postscript."
           (graph-type (if directed "digraph" "graph"))
           (node-defaults '())
           (edge-defaults '()))
-      (format t "~a {~%" graph-type)
+      (format stream "~a {~%" graph-type)
       (loop for (name value) on attributes by #'cddr do
-            (cond ((eq :node name)
-                   (push value node-defaults))
-                  ((eq :edge name)
-                   (push value edge-defaults))
-                  (t
-                   (print-key-value stream name value *graph-attributes*)
-                   (format t ";~%"))))
-      (setf node-defaults (nreverse node-defaults)
-            edge-defaults (nreverse edge-defaults))
-      (loop for (name value) in node-defaults do
-            (write-string "  node [")
-            (print-key-value stream name value *node-attributes*)
-            (write-line "]"))
-      (loop for (name value) in edge-defaults do
-            (write-string "  edge [")
-            (print-key-value stream name value *edge-attributes*)
-            (write-line "]"))
+           (case name
+             (:node
+              (setf node-defaults (append node-defaults value)))
+             (:edge
+              (setf edge-defaults (append edge-defaults value)))
+             (t
+              (print-key-value stream name value *graph-attributes*)
+              (format stream ";~%"))))
+      ;; Default attributes.
+      (print-defaults stream "node" node-defaults *node-attributes*)
+      (print-defaults stream "edge" edge-defaults *edge-attributes*)
+      ;; Nodes and edges.
       (dolist (node nodes)
-        (format t "  ~a [" (textify (id-of node)))
-        (loop for (name value) on (attributes-of node) by #'cddr
-              for prefix = "" then "," do
-              (write-string prefix)
-              (print-key-value stream name value *node-attributes*))
-        (format t "];~%"))
+        (format stream "  ~a " (textify (id-of node)))
+        (print-attributes stream (attributes-of node) *node-attributes*)
+        (format stream ";~%"))
       (dolist (edge edges)
-        (format t "  ~a~@[:~a~] ~a ~a~@[:~a~] ["
+        (format stream "  ~a~@[:~a~] ~a ~a~@[:~a~]"
                 (textify (id-of (source-of edge))) (source-port-of edge)
                 edge-op
                 (textify (id-of (target-of edge))) (target-port-of edge))
-        (loop for (name value) on (attributes-of edge) by #'cddr
-              for prefix = "" then "," do
-              (write-string prefix)
-              (print-key-value stream name value *edge-attributes*))
-        (format t "];~%"))
-      (format t "}")
+        (print-attributes stream (attributes-of edge) *edge-attributes*)
+        (format stream ";~%"))
+      (format stream "}")
       (values))))
+
+(defun print-defaults (stream kind attributes schema)
+  (when attributes
+    (format stream "  ~A " kind)
+    (print-attributes stream attributes schema)
+    (format stream "~%")))
+
+(defun print-attributes (stream attributes schema)
+  (format stream "[")
+  (loop for (name value) on attributes by #'cddr
+     for prefix = "" then "," do
+       (write-string prefix)
+       (print-key-value stream name value schema))
+  (format stream "]"))
 
 (defun print-key-value (stream key value attributes)
   (destructuring-bind (key value-type)
