@@ -2,7 +2,7 @@
 
 (asdf:defsystem :cl-dot.class-example
   :version "0.8.0"
-  :description "Generate Dot Output from Arbitrary Lisp Data"
+  :description "Generate Dot Output from Package, Class, etc..."
   :author "Juho Snellman <jsnell@iki.fi>"
   :maintainer "Michael Weber <michaelw@foldr.org>"
   :depends-on (:cl-dot)
