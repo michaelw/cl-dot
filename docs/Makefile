@@ -46,7 +46,7 @@ manual.pdf: $(manual_SOURCES)
 version.texi: version.texi.tmp
 	if cmp $< $@ 2>/dev/null; then $(RM) $<; else mv $< $@; fi
 
-version.texi.tmp: VERSION := $(shell git describe --tags --abbrev=6 HEAD)
+version.texi.tmp: VERSION := $(shell git describe --tags --abbrev=6 HEAD || echo unknown)
 version.texi.tmp:
 	echo "@set VERSION $(VERSION:cl-dot-%=%)" > $@
 .PHONY: version.texi.tmp

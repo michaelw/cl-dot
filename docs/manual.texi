@@ -63,17 +63,7 @@ with the software or the use or other dealings in the software.}
 @end ifnothtml
 
 @macro keyword{kw}
-@ifnothtml
-@ifnotinfo
-@code{\kw\}@c
-@end ifnotinfo
-@end ifnothtml
-@html
-@code{<span class="keyword">\kw\</span>}@c
-@end html
-@ifinfo
-\kw\@c
-@end ifinfo
+@inlinefmtifelse{html, @code{<span class="keyword">\kw\</span>}, @inlinefmtifelse{info, \kw\, @code{\kw\}}}
 @end macro
 
 @macro initarg{initarg}
@@ -81,29 +71,11 @@ with the software or the use or other dealings in the software.}
 @end macro
 
 @macro coderef{ref}
-@ifnottex
-@ifnotinfo
-@code{@ref{\ref\}}@c
-@end ifnotinfo
-@end ifnottex
-@iftex @code{\ref\}@c
-@end iftex
-@ifinfo
-\ref\@c
-@end ifinfo
+@inlinefmtifelse{tex, @code{\ref\}, @inlinefmtifelse{info, \ref\, @code{@ref{\ref\}}}}
 @end macro
 
 @macro pcoderef{package,ref}
-@ifnottex
-@ifnotinfo
-@code{@ref{\ref\,\package\:\ref\}}@c
-@end ifnotinfo
-@end ifnottex
-@iftex @code{\package\:\ref\}@c
-@end iftex
-@ifinfo
-\package\:\ref\@c
-@end ifinfo
+@inlinefmtifelse{tex, @code{\package\:\ref\}, @inlinefmtifelse{info, \package\:\ref\, @code{@ref{\ref\,\package\:\ref\}}}}
 @end macro
 
 @macro cliki{project}
