@@ -10,9 +10,9 @@
   :serial t
   :long-description "
 
-This example contains a convenient functions `visualize-class-hierarchy'
+This example contains convenient functions `visualize-class-hierarchy'
 and `visualize-class-hierarchy-in-package'. These apps help you understand
-the large systems with complicated CLOS hierarchy e.g. ASDF, CLACK, CXML and so on.
+large systems with complicated CLOS hierarchy e.g. ASDF, CLACK, CXML and so on.
 
 Try this:
 
