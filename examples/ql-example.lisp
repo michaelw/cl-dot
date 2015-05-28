@@ -15,26 +15,40 @@ Try this (assume quicklisp is already loaded):
         #+sbcl :sb-mop
         #-sbcl :closer-mop)
   (:export
-   #:ql-example
+   #:requiredby
+   #:dependson
    #:visualize-ql-hierarchy))
 
 (in-package :ql-hierarchy)
 
-(defmethod graph-object-node ((graph (eql 'ql-example)) (object QL-DIST:SYSTEM))
+(defmethod graph-object-node ((graph (eql 'requiredby)) (object QL-DIST:SYSTEM))
   (make-instance 'node
                  :attributes (list :label (ql-dist:name object)
                                    :shape :octagon
                                    :style :filled
                                    :fillcolor "#eeeeff")))
 
-(defmethod graph-object-points-to ((graph (eql 'ql-example)) (object QL-DIST:SYSTEM))
+(defmethod graph-object-points-to ((graph (eql 'requiredby)) (object QL-DIST:SYSTEM))
   (remove nil
           (mapcar #'ql-dist:find-system
                   (ql-dist:required-systems object))))
 
-(defun visualize-ql-hierarchy (target-png &optional (seed-systems (ql:system-list)))
+(defmethod graph-object-node ((graph (eql 'dependson)) (object QL-DIST:SYSTEM))
+  (make-instance 'node
+                 :attributes (list :label (ql-dist:name object)
+                                   :shape :octagon
+                                   :style :filled
+                                   :fillcolor "#eeeeff")))
+
+(defmethod graph-object-points-to ((graph (eql 'dependson)) (object QL-DIST:SYSTEM))
+  (remove nil
+          (mapcar #'ql-dist:find-system
+                  (ql:who-depends-on (ql-dist:name object)))))
+
+
+(defun visualize-ql-hierarchy (target-png &optional (seed-systems (ql:system-list)) (mode 'requiredby))
   (dot-graph
-   (generate-graph-from-roots 'ql-example seed-systems '(:rankdir "LR"))
+   (generate-graph-from-roots mode seed-systems '(:rankdir "LR"))
    target-png :format :png))
 
 
