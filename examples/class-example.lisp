@@ -12,7 +12,7 @@ Try this:
 |#
 
 
-(defpackage :class-hierarchy
+(defpackage :cl-dot.class-example
   (:use :cl :cl-dot
         #+sbcl :sb-mop
         #-sbcl :closer-mop)
@@ -21,7 +21,7 @@ Try this:
    #:visualize-class-hierarchy
    #:visualize-class-hierarchy-in-package))
 
-(in-package :class-hierarchy)
+(in-package :cl-dot.class-example)
 
 (defmethod graph-object-node ((graph (eql 'class-example)) (object class))
   (make-instance 'node

@@ -10,7 +10,7 @@ Try this (assume quicklisp is already loaded):
 |#
 
 
-(defpackage :asdf-hierarchy
+(defpackage :cl-dot.asdf-example
   (:use :cl :cl-dot :trivia
         #+sbcl :sb-mop
         #-sbcl :closer-mop)
@@ -18,7 +18,7 @@ Try this (assume quicklisp is already loaded):
    #:dependson
    #:visualize-asdf-hierarchy))
 
-(in-package :asdf-hierarchy)
+(in-package :cl-dot.asdf-example)
 
 (defmethod graph-object-node ((graph (eql 'dependson)) (object asdf:component))
   (make-instance 'node

@@ -7,10 +7,12 @@ Try this (assume quicklisp is already loaded):
  (ql-hierarchy:visualize-ql-hierarchy
    (merge-pathnames \"ql-classes.png\" (user-homedir-pathname)))
 
+Note: it doesn't work for local projects.
+
 |#
 
 
-(defpackage :ql-hierarchy
+(defpackage :cl-dot.ql-example
   (:use :cl :cl-dot
         #+sbcl :sb-mop
         #-sbcl :closer-mop)
@@ -19,7 +21,7 @@ Try this (assume quicklisp is already loaded):
    #:dependson
    #:visualize-ql-hierarchy))
 
-(in-package :ql-hierarchy)
+(in-package :cl-dot.ql-example)
 
 (defmethod graph-object-node ((graph (eql 'requiredby)) (object QL-DIST:SYSTEM))
   (make-instance 'node
