@@ -15,7 +15,7 @@ This example contains convenient functions `visualize-ql-hierarchy'.
 Try this (assume quicklisp is already loaded):
 
  (ql-hierarchy:visualize-ql-hierarchy
-   (merge-pathnames \"asdf-classes.png\" (user-homedir-pathname)))
+   (merge-pathnames \"ql-classes.png\" (user-homedir-pathname)))
 "
   :components
   ((:file "ql-example"))
