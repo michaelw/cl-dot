@@ -146,7 +146,7 @@ FORMAT is Postscript."
                       (print-graph graph
                                    :stream stream
                                    :directed directed))))
-    (uiop:run-program (list dot-path format "-o" outfile)
+    (uiop:run-program (list dot-path format "-o" (namestring outfile))
                       :input (make-string-input-stream dot-string)
                       :output *standard-output*)))
 
