@@ -12,6 +12,10 @@
   #-(or win32 mswindows) "/usr/bin/neato"
   "Path to the neato command")
 
+(eval-when (:load-toplevel :execute)
+  (setf *dot-path* (find-dot))
+  (setf *neato-path* (find-neato)))
+
 ;;; Classes
 
 (defvar *id*)

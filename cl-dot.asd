@@ -9,6 +9,7 @@
   :serial t
   :components
   ((:file "package")
+   (:file "config-graphviz")
    (:file "attributes")
    (:file "cl-dot")
    (:file "deprecated")
