@@ -58,7 +58,9 @@
     (:style (:filled :solid :dashed :dotted :bold :invis))
     (:layer text)
     (:url text)
-    (:target text)))
+    (:target text)
+    (:tooltip text)
+    (:id text)))
 
 (defparameter *edge-attributes*
   '((:minlen integer)
@@ -92,4 +94,5 @@
     (:constraint boolean)
     (:layer text)
     (:url text)
-    (:target text)))
+    (:target text)
+    (:tooltip text)))
