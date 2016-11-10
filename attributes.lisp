@@ -32,8 +32,8 @@
     (:stylesheet text)))
 
 (defparameter *node-attributes*
-  '((:height integer)
-    (:width integer)
+  '((:height float)
+    (:width float)
     (:fixed-size boolean)
     (:label label-text)
     (:shape (:box :polygon :ellipse :oval
