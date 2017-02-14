@@ -10,6 +10,7 @@
   :components
   ((:file "package")
    (:file "config-graphviz")
+   (:file "attribute")
    (:file "attributes")
    (:file "cl-dot")
    (:file "deprecated")
