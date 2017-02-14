@@ -280,9 +280,9 @@ FORMAT is Postscript."
   (format stream "]"))
 
 (defun print-key-value (stream key value attributes)
-  (destructuring-bind (key value-type)
-      (or (assoc key attributes)
-          (error "Invalid attribute ~S" key))
+  (let* ((attribute    (find-attribute key attributes))
+         (foreign-name (attribute-foreign-name attribute))
+         (type         (attribute-type attribute)))
     (flet ((text-value (value)
              (typecase value
                (cons
@@ -290,10 +290,8 @@ FORMAT is Postscript."
                   (textify value :alignment alignment)))
                (t
                 (textify value)))))
-      (format stream "~a=~a" (case key
-                               (:url key)
-                               (t    (string-downcase key)))
-              (etypecase value-type
+      (format stream "~a=~a" foreign-name
+              (etypecase type
                 ((member integer)
                  (unless (typep value 'integer)
                    (error "Invalid value for ~S: ~S is not an integer"
@@ -314,9 +312,9 @@ FORMAT is Postscript."
                 ((member float)
                  (coerce value 'single-float))
                 (list
-                 (unless (member value value-type :test 'equal)
+                 (unless (member value type :test 'equal)
                    (error "Invalid value for ~S: ~S is not one of ~S"
-                          key value value-type))
+                          key value type))
                  (if (symbolp value)
                      (string-downcase value)
                      value)))))))
