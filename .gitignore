@@ -2,3 +2,5 @@
 .DS_Store
 cl-dot.fasl
 /docs/version.texi
+*~
+#*
