@@ -3,7 +3,8 @@
 (in-package cl-dot)
 
 (defparameter *graph-attributes*
-  '((:label label-text)
+  '((:compound boolean)
+    (:label label-text)
     (:size text)
     (:page text)
     (:ratio (:fill :compress :auto)) ;; Could actually be a float number too
@@ -13,7 +14,7 @@
     (:edge attribute)
     (:ranksep float)
     (:ordering (:out))
-    (:rankdir ("LR" "RL" "BT"))
+    (:rankdir ("LR" "RL" "BT" "TB"))
     (:dir ("forward" "none"))
     (:pagedir text)
     (:layout text) ;; neato, twopi, etc.
@@ -29,16 +30,32 @@
     (:bgcolor text)
     (:url text)
     (:target text)
-    (:stylesheet text)))
+    (:stylesheet text)
+    (:splines text)))
+
+(defparameter *node-shapes*
+  '(:box :polygon :ellipse :oval
+    :circle :point :egg :triangle
+    :plaintext :plain :diamond :trapezium
+    :parallelogram :house :pentagon :hexagon
+    :septagon :octagon :doublecircle :doubleoctagon
+    :tripleoctagon :invtriangle :invtrapezium :infhouse
+    :Mdiamond :Msquare :Mcircle :rect
+    :rectangle :square :star :none
+    :underline :cylinder :note :tab
+    :folder :box3d :component :promoter
+    :cds :terminator :utr :primersite
+    :restrictionsite :fivepoverhang :threepoverhang :noverhang
+    :assembly :signature :insulator :ribosite
+    :rnastab :proteasesite :proteinstab :rpromoter
+    :rarrow :larrow :lpromoter :record))
 
 (defparameter *node-attributes*
-  '((:height integer)
-    (:width integer)
+  `((:height float)
+    (:width float)
     (:fixed-size boolean)
     (:label label-text)
-    (:shape (:record :plaintext :ellipse :circle :egg :triangle :box
-             :diamond :trapezium :parallelogram :house :hexagon :octagon
-             :doubleoctagon))
+    (:shape ,*node-shapes*)
     (:fontsize integer)
     (:fontname text)
     (:color text)
@@ -46,12 +63,19 @@
     (:style (:filled :solid :dashed :dotted :bold :invis))
     (:layer text)
     (:url text)
-    (:target text)))
+    (:target text)
+    (:tooltip text)
+    (:id text)))
+
+(defparameter *predefined-arrow-shapes*
+  '(:normal :inv :dot :invdot :odot :invodot :none :tee :empty
+    :invempty :diamond :odiamond :ediamond :crow :box :obox :open
+    :halfopen :vee :circle)
+  "See http://www.graphviz.org/doc/info/attrs.html#k:arrowType.")
 
 (defparameter *edge-attributes*
-  '((:minlen integer)
+  `((:minlen integer)
     (:weight integer)
-    (:arrowhead ("normal" "inv" "dot" "invdot" "odot" "invodot" "none" "tee" "empty" "invempty" "diamond" "odiamond" "ediamond" "crow" "box" "obox" "open" "halfopen" "vee" "circle"))
     (:label label-text)
     (:fontsize integer)
     (:fontname text)
@@ -61,14 +85,12 @@
     (:dir (:forward :back :both :none))
     (:tailclip boolean)
     (:headclip boolean)
-    (:arrowhead (:none :normal :inv :dot :odot :invdot :invodot :tee
-                 :empty :invempty :open :halfopen :diamond :odiamond
-                 :box :obox :crow))
-    (:arrowtail (:none :normal :inv :dot :odot :invdot :invodot :tee
-                 :empty :invempty :open :halfopen :diamond :odiamond
-                 :box :obox :crow))
+    (:arrowhead ,*predefined-arrow-shapes*)
+    (:arrowtail ,*predefined-arrow-shapes*)
     (:headlabel label-text)
     (:taillabel label-text)
+    (:ltail text)
+    (:lhead text)
     (:labelfontsize integer)
     (:labelfontname text)
     (:labelfontcolor text)
@@ -80,4 +102,5 @@
     (:constraint boolean)
     (:layer text)
     (:url text)
-    (:target text)))
+    (:target text)
+    (:tooltip text)))
