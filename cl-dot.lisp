@@ -325,29 +325,36 @@ FORMAT is Postscript."
   (check-type object (cons (eql :html) (cons null)))
   (with-output-to-string (stream)
     (labels
-        ((textify-node (node)
-           (typecase node
+        ((escape-string (string &optional (stream stream))
+           (loop :for c :across string :do
+              (case c
+                (#\"
+                 (write-string "&quot;" stream))
+                (#\<
+                 (write-string "&lt;" stream))
+                (#\>
+                 (write-string "&gt;" stream))
+                (#\&
+                 (write-string "&amp;" stream))
+                (#\Newline
+                 (write-string "<br/>" stream))
+                (t
+                 (write-char c stream)))))
+         (escape-attribute (attribute)
+           (list
+            (first attribute)
+            (with-output-to-string (stream)
+              (escape-string (second attribute) stream))))
+         (textify-node (node)
+           (etypecase node
              (cons
               (destructuring-bind (name attributes &rest children) node
-                (format stream "<~A~@[ ~{~{~A=~S~}~^ ~}~]>"
-                        name attributes)
+                (format stream "<~A~@[ ~{~{~A=\"~A\"~}~^ ~}~]>"
+                        name (mapcar #'escape-attribute attributes))
                 (mapc #'textify-node children)
                 (format stream "</~A>" name)))
-            (t
-             (loop :for c :across node :do
-                (case c
-                  (#\"
-                   (write-string "&quot;" stream))
-                  (#\<
-                   (write-string "&lt;" stream))
-                  (#\>
-                   (write-string "&gt;" stream))
-                  (#\&
-                   (write-string "&amp;" stream))
-                  (#\Newline
-                   (write-string "<br/>" stream))
-                  (t
-                   (write-char c stream))))))))
+             (string
+              (escape-string node)))))
       (write-char #\< stream)
       (mapc #'textify-node (nthcdr 2 object))
       (write-char #\> stream))))
