@@ -30,8 +30,9 @@ path, or search of likely installation locations."
 
 
 (defun check-in-path (name)
-  (unless (uiop:os-windows-p)
-    (multiple-value-bind (outstring errstring exit-code)
-        (uiop:run-program (format nil "which ~a" name) :force-shell t :output '(:string :stripped t) :ignore-error-status t)
-      (declare (ignore errstring))
-      (when (zerop exit-code) outstring))))
+  (multiple-value-bind (outstring errstring exit-code)
+      (uiop:run-program (list  #+(or win32 mswindows)"where"
+                               #-(or win32 mswindows)"which"
+                               name) :force-shell t :output '(:string :stripped t) :ignore-error-status t)
+    (declare (ignore errstring))
+    (when (zerop exit-code) (uiop:parse-native-namestring outstring))))
