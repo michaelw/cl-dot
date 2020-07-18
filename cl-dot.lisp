@@ -312,12 +312,16 @@ FORMAT is Postscript."
                 ((member float)
                  (coerce value 'single-float))
                 (list
-                 (unless (member value type :test 'equal)
-                   (error "Invalid value for ~S: ~S is not one of ~S"
-                          key value type))
-                 (if (symbolp value)
-                     (string-downcase value)
-                     value)))))))
+                 (flet ((stringify (value)
+                          (unless (member value type :test 'equal)
+                            (error "Invalid value for ~S: ~S is not one of ~S"
+                                   key value type))
+                          (if (symbolp value)
+                              (string-downcase value)
+                              value)))
+                   (if (listp value)
+                       (format nil "\"~{~A~^,~}\"" (mapcar #'stringify value))
+                       (stringify value)))))))))
 
 (defun htmlify (object)
   (check-type object (cons (eql :html) (cons null)))
