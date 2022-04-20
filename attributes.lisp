@@ -14,3 +14,6 @@
 
 (defparameter *edge-attributes*
   (remove :edge *attributes* :test-not #'member :key #'attribute-allowed-in))
+
+(defparameter *cluster-attributes*
+  (remove :cluster *attributes* :test-not #'member :key #'attribute-allowed-in))
