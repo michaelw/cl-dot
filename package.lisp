@@ -2,11 +2,14 @@
 
 (defpackage cl-dot
   (:use :common-lisp)
-  (:export #:attributed #:node
+  (:export #:attributed #:node #:cluster
            #:*dot-path*
            #:*neato-path*
-           #:graph-object-knows-of #:graph-object-node
-           #:graph-object-points-to #:graph-object-pointed-to-by
+           #:graph-object-knows-of
+           #:graph-object-node
+           #:graph-object-cluster
+           #:graph-object-points-to
+           #:graph-object-pointed-to-by
            #:graph-object-edges
            #:generate-graph-from-roots
            #:print-graph #:dot-graph)
