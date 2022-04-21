@@ -19,11 +19,9 @@
    (:static-file "COPYING")
    (:static-file "ChangeLog")
    (:module "examples"
-            :components
-            ((:static-file "class-example" :pathname "class-example.lisp")
-             (:static-file "list-example" :pathname "list-example.lisp")
-             (:static-file "list-example-old" :pathname "list-example-old.lisp")
-             (:static-file "sb-c-example" :pathname "sb-c-example.lisp")))
-   (:module "docs"
-            :components
-            ((:html-file "cl-dot")))))
+    :components
+    ((:static-file "class-example" :pathname "class-example.lisp")
+     (:static-file "list-example" :pathname "list-example.lisp")
+     (:static-file "list-example-old" :pathname "list-example-old.lisp")
+     (:static-file "sb-c-example" :pathname "sb-c-example.lisp")
+     (:static-file "subgraph-example" :pathname "subgraph-example.lisp")))))
