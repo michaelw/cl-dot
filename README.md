@@ -8,9 +8,9 @@ Building
 --------
 Presuming ASDF is available:
 
-    (asdf:oos 'asdf:load-op :cl-dot)
+    (asdf:load-system :cl-dot)
 
-Depending on the Lisp being used, a (require :cl-dot) might do as
+Depending on the Lisp being used, `(require :cl-dot)` might do as
 well.
 
 
