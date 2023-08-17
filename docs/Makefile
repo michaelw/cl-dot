@@ -56,7 +56,7 @@ version.texi.tmp:
 
 %.pdf: %.texi
 	$(PDFTEX) $<
-	$(TEXINDEX) $*.{cp,fn,vr,tp}
+	$(TEXINDEX) $*.{fn,vr,tp}
 	$(PDFTEX) $<
 
 .PHONY: all clean real-clean install install-data install-info
