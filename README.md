@@ -16,17 +16,12 @@ well.
 
 Documentation
 -------------
-See directory docs/
+See [docs](docs/) directory
 
 
 Licence
 -------
-See file COPYING.
-
-
-Canonical Download
-------------------
-http://foldr.org/~michaelw/projects/cl-dot/
+See file [COPYING](COPYING).
 
 
 Authors
