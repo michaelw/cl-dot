@@ -81,7 +81,7 @@ it can still have an indirect effect via other protocol
 functions (e.g. GRAPH-OBJECT-KNOWS-OF).  This function will only be
 called once for each object during the generation of a graph.")
   (:method ((graph (eql 'default)) object)
-    (declare (ignore graph))
+    (declare (ignorable graph))
     (object-node object)))
 
 (defgeneric graph-object-cluster (graph object)
@@ -115,9 +115,10 @@ The edges will be directed from this object to the others.  To assign
 dot attributes to the generated edges, each object can optionally be
 wrapped in a instance of ATTRIBUTED.")
   (:method ((graph (eql 'default)) object)
-    (declare (ignore graph))
+    (declare (ignorable graph))
     (object-points-to object))
   (:method (graph (object t))
+    (declare (ignorable graph object))
     '()))
 
 (defgeneric graph-object-pointed-to-by (graph object)
@@ -129,9 +130,10 @@ The edges will be directed from the other objects to this one. To
 assign dot attributes to the generated edges, each object can
 optionally be wrapped in a instance of ATTRIBUTED.")
   (:method ((graph (eql 'default)) object)
-    (declare (ignore graph))
+    (declare (ignorable graph))
     (object-pointed-to-by object))
   (:method (graph (object t))
+    (declare (ignorable graph object))
     '()))
 
 (defgeneric graph-object-knows-of (graph object)
@@ -139,9 +141,10 @@ optionally be wrapped in a instance of ATTRIBUTED.")
    "Returns a sequence of objects that this object knows should be
 part of the graph, but which it has no direct connections to.")
   (:method ((graph (eql 'default)) object)
-    (declare (ignore graph))
+    (declare (ignorable graph))
     (object-knows-of object))
   (:method (graph (object t))
+    (declare (ignorable graph object))
     '()))
 
 ;;; Public interface
