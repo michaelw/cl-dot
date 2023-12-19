@@ -35,4 +35,5 @@ path, or search of likely installation locations."
                                #-(or win32 mswindows)"which"
                                name) :force-shell t :output '(:string :stripped t) :ignore-error-status t)
     (declare (ignore errstring))
-    (when (zerop exit-code) (uiop:parse-native-namestring outstring))))
+    (when (zerop exit-code) (namestring
+                             (uiop:parse-native-namestring outstring)))))
