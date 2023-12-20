@@ -1,20 +1,31 @@
 (in-package cl-dot)
 
+#+os-macosx
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defvar +mac-binary-path+
+    (or (probe-file "/opt/homebrew/bin/") ; homebrew
+        (probe-file "/opt/local/bin/")  ; MacPorts
+        (probe-file "/usr/bin/"))))     ; best guess
+
 (defvar *dot-path*
   #+(or win32 mswindows) "\"C:/Program Files/ATT/Graphviz/bin/dot.exe\""
-  #-(or win32 mswindows) "/usr/bin/dot"
+  #+os-macosx (probe-file (merge-pathnames (make-pathname :name "dot" :type "")))
+  #-(or win32 mswindows os-macosx) "/usr/bin/dot"
   "Path to the dot command")
 
 ;; the path to the neato executable (used for drawing undirected
 ;; graphs).
 (defvar *neato-path*
   #+(or win32 mswindows) "\"C:/Program Files/ATT/Graphviz/bin/neato.exe\""
-  #-(or win32 mswindows) "/usr/bin/neato"
+  #+os-macosx (probe-file (merge-pathnames (make-pathname :name "neato" :type "")))
+  #-(or os-macosx win32 mswindows) "/usr/bin/neato"
   "Path to the neato command")
 
 (eval-when (:load-toplevel :execute)
   (setf *dot-path* (find-dot))
-  (setf *neato-path* (find-neato)))
+  (setf *neato-path* (find-neato))
+  (or *dot-path* (warn "Could not find 'dot' executable! Please set CL-DOT:*DOT-PATH*"))
+  (or *neato-path* (warn "Could not find 'neato' executable! Please set CL-DOT:*NEATO-PATH*")))
 
 ;;; Classes
 
