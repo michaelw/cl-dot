@@ -24,8 +24,8 @@
 (eval-when (:load-toplevel :execute)
   (setf *dot-path* (find-dot))
   (setf *neato-path* (find-neato))
-  (or *dot-path* (warn "Could not find 'dot' executable!"))
-  (or *neato-path* (warn "Could not find 'neato' executable!")))
+  (or *dot-path* (warn "Could not find 'dot' executable! Please set CL-DOT:*DOT-PATH*"))
+  (or *neato-path* (warn "Could not find 'neato' executable! Please set CL-DOT:*NEATO-PATH*")))
 
 ;;; Classes
 
