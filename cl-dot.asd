@@ -1,7 +1,7 @@
 ;; -*- Syntax: Ansi-Common-Lisp; Mode: lisp; -*-
 
 (asdf:defsystem :cl-dot
-  :version "0.9.0"
+  :version "0.9.1"
   :description "Generate Dot Output from Arbitrary Lisp Data"
   :author "Juho Snellman <jsnell@iki.fi>"
   :maintainer "Michael Weber <michaelw@foldr.org>"
