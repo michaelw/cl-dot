@@ -185,10 +185,11 @@ from OBJECTS, using the GRAPH-OBJECT- protocol.")
 (defun dot-graph (graph outfile &key (format :ps) (directed t))
   "Renders GRAPH to OUTFILE by running the program in \*DOT-PATH* or
 *NEATO-PATH* depending on the value of the DIRECTED keyword
-argument.  The default is a directed graph.  The default
-FORMAT is Postscript."
+argument.  The default is a directed graph. 
+The output file is assigned a suffix based on the FORMAT.
+The default FORMAT is Postscript."
   (when (null format) (setf format :ps))
-
+  (setf outfile (merge-pathnames (parse-namestring outfile) (make-pathname :type (string-downcase format))))
   (let ((dot-path (if directed *dot-path* *neato-path*))
         (format (format nil "-T~(~a~)" format))
         (dot-string (with-output-to-string (stream)
