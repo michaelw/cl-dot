@@ -182,22 +182,22 @@ from OBJECTS, using the GRAPH-OBJECT- protocol.")
          (attributes-of graph)
          options))
 
-(defun dot-graph (graph outfile &key (format :ps) (directed t))
+(defun dot-graph (graph outfile &key (format :pdf) (directed t))
   "Renders GRAPH to OUTFILE by running the program in \*DOT-PATH* or
 *NEATO-PATH* depending on the value of the DIRECTED keyword
-argument.  The default is a directed graph. 
+argument.  The default is a directed graph.
 The output file is assigned a suffix based on the FORMAT.
-The default FORMAT is Postscript."
-  (when (null format) (setf format :ps))
-  (setf outfile (merge-pathnames (parse-namestring outfile) (make-pathname :type (string-downcase format))))
-  (let ((dot-path (if directed *dot-path* *neato-path*))
+The default FORMAT is PDF."
+  (let ((outfile (merge-pathnames (parse-namestring outfile)
+                                  (make-pathname :type (string-downcase format))))
+        (dot-path (if directed *dot-path* *neato-path*))
         (format (format nil "-T~(~a~)" format))
         (dot-string (with-output-to-string (stream)
                       (print-graph graph
                                    :stream stream
                                    :directed directed))))
     (unless dot-path
-      (error "neither 'dot' or 'neato' binary are found.
+      (error "Neither 'dot' or 'neato' binary are found.
 Consider something like sudo apt install graphviz!"))
     (uiop:run-program (list dot-path format "-o" (namestring outfile))
                       :input (make-string-input-stream dot-string)
