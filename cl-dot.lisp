@@ -197,7 +197,7 @@ The default FORMAT is PDF."
                                    :stream stream
                                    :directed directed))))
     (unless dot-path
-      (error "Neither 'dot' or 'neato' binary are found.
+      (error "Neither 'dot' nor 'neato' binary are found.
 Consider something like sudo apt install graphviz!"))
     (uiop:run-program (list dot-path format "-o" (namestring outfile))
                       :input (make-string-input-stream dot-string)
