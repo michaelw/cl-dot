@@ -4,32 +4,14 @@
                *dot-path* *neato-path*))
 
 (defvar *dot-path*
-  (find-dot)
+  nil
   "Path to the dot command")
 
 ;; the path to the neato executable (used for drawing undirected
 ;; graphs).
 (defvar *neato-path*
-  (find-neato)
+  nil
   "Path to the neato command")
-
-(eval-when (:load-toplevel :execute)
-  (setf *dot-path* (find-dot))
-  (setf *neato-path* (find-neato))
-  (macrolet ((print-warning (which)
-               (let (executable lisp-var envar)
-                 (ecase which
-                   (:dot (setf executable "'dot'"
-                               lisp-var "CL-DOT:*DOT-PATH*"
-                               envar "CL_DOT_DOT"))
-                   (:neato (setf executable "'neato'"
-                             lisp-var "CL-DOT:*NEATO-PATH*"
-                             envar "CL_DOT_NEATO")))
-             `(format *error-output* "Could not find ~a executable in your path or likely locations. ~
-If needed, please set ~a or environment variable ~a (the latter will require ~
-restarting your lisp session).~%" ,executable ,lisp-var ,envar))))
-    (or *dot-path* (print-warning :dot))
-    (or *neato-path* (print-warning :neato))))
 
 ;;; Classes
 
@@ -193,15 +175,19 @@ argument.  The default is a directed graph.  The default
 FORMAT is Postscript."
   (when (null format) (setf format :ps))
 
-  (let ((dot-path (if directed *dot-path* *neato-path*))
+  (let ((dot-path (if directed
+                      (setf *dot-path*
+                            (or *dot-path* (find-dot)))
+                      (setf *neato-path*
+                            (or *neato-path* (find-neato)))))
         (format (format nil "-T~(~a~)" format))
         (dot-string (with-output-to-string (stream)
                       (print-graph graph
                                    :stream stream
                                    :directed directed))))
     (unless dot-path
-      (error "neither 'dot' or 'neato' binary are found.
-Consider something like sudo apt install graphviz!"))
+      (error "~a binary not found. Make sure it is installed and in your path."
+             (if directed "'dot'" "'neato'")))
     (uiop:run-program (list dot-path format "-o" (namestring outfile))
                       :input (make-string-input-stream dot-string)
                       :output *standard-output*)))
