@@ -16,8 +16,20 @@
 (eval-when (:load-toplevel :execute)
   (setf *dot-path* (find-dot))
   (setf *neato-path* (find-neato))
-  (or *dot-path* (warn "Could not find 'dot' executable! Please set CL-DOT:*DOT-PATH*"))
-  (or *neato-path* (warn "Could not find 'neato' executable! Please set CL-DOT:*NEATO-PATH*")))
+  (macrolet ((print-warning (which)
+               (let (executable lisp-var envar)
+                 (ecase which
+                   (:dot (setf executable "'dot'"
+                               lisp-var "CL-DOT:*DOT-PATH*"
+                               envar "CL_DOT_DOT"))
+                   (:neato (setf executable "'neato'"
+                             lisp-var "CL-DOT:*NEATO-PATH*"
+                             envar "CL_DOT_NEATO")))
+             `(format *error-output* "Could not find ~a executable in your path or likely locations. ~
+If needed, please set ~a or environment variable ~a (the latter will require ~
+restarting your lisp session).~%" ,executable ,lisp-var ,envar))))
+    (or *dot-path* (print-warning :dot))
+    (or *neato-path* (print-warning :neato))))
 
 ;;; Classes
 
