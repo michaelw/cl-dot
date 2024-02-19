@@ -1,9 +1,5 @@
 (in-package :cl-dot)
 
-;;; I'd much rather look for "dot" and "neato" in environment variables, and
-;;; then the user's path first, but that seems beyond the bounds of portability
-;;; [2014/03/15:rpg]
-
 (declaim (ftype (function () (values (or null string) &optional))
                 find-dot find-neato))
 
