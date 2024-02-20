@@ -168,19 +168,21 @@ from OBJECTS, using the GRAPH-OBJECT- protocol.")
          (attributes-of graph)
          options))
 
-(defun dot-graph (graph outfile &key (format :ps) (directed t))
+(defun dot-graph (graph outfile &key (format :pdf) (directed t))
   "Renders GRAPH to OUTFILE by running the program in \*DOT-PATH* or
 *NEATO-PATH* depending on the value of the DIRECTED keyword
 argument.  The default is a directed graph.  The default
-FORMAT is Postscript."
-  (when (null format) (setf format :ps))
+FORMAT is PDF."
+  (let ()
 
-  (let ((dot-path (if directed
+  (let ((format (format nil "-T~(~a~)" format))
+        (outfile (merge-pathnames (parse-namestring outfile)
+                                  (make-pathname :type (string-downcase format))))
+        (dot-path (if directed
                       (setf *dot-path*
                             (or *dot-path* (find-dot)))
                       (setf *neato-path*
-                            (or *neato-path* (find-neato)))))
-        (format (format nil "-T~(~a~)" format))
+                            (or *neato-path* (find-neato))))
         (dot-string (with-output-to-string (stream)
                       (print-graph graph
                                    :stream stream
