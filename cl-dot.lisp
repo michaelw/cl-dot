@@ -173,8 +173,6 @@ from OBJECTS, using the GRAPH-OBJECT- protocol.")
 *NEATO-PATH* depending on the value of the DIRECTED keyword
 argument.  The default is a directed graph.  The default
 FORMAT is PDF."
-  (let ()
-
   (let ((format (format nil "-T~(~a~)" format))
         (outfile (merge-pathnames (parse-namestring outfile)
                                   (make-pathname :type (string-downcase format))))
@@ -182,7 +180,7 @@ FORMAT is PDF."
                       (setf *dot-path*
                             (or *dot-path* (find-dot)))
                       (setf *neato-path*
-                            (or *neato-path* (find-neato))))
+                            (or *neato-path* (find-neato)))))
         (dot-string (with-output-to-string (stream)
                       (print-graph graph
                                    :stream stream
