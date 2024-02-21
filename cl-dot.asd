@@ -1,10 +1,10 @@
 ;; -*- Syntax: Ansi-Common-Lisp; Mode: lisp; -*-
 
 (asdf:defsystem :cl-dot
-  :version "0.9.1"
+  :version "0.9.2"
   :description "Generate Dot Output from Arbitrary Lisp Data"
   :author "Juho Snellman <jsnell@iki.fi>"
-  :maintainer "Michael Weber <michaelw@foldr.org>"
+  :maintainer "Robert P. Goldman <rpgoldman@sift.net>"
   :depends-on (:uiop)
   :serial t
   :components
