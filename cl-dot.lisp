@@ -1,31 +1,17 @@
 (in-package cl-dot)
 
-#+os-macosx
-(eval-when (:compile-toplevel :load-toplevel :execute)
-  (defvar +mac-binary-path+
-    (or (probe-file "/opt/homebrew/bin/") ; homebrew
-        (probe-file "/opt/local/bin/")  ; MacPorts
-        (probe-file "/usr/bin/"))))     ; best guess
+(declaim (type (or null string)
+               *dot-path* *neato-path*))
 
 (defvar *dot-path*
-  #+(or win32 mswindows) "\"C:/Program Files/ATT/Graphviz/bin/dot.exe\""
-  #+os-macosx (probe-file (merge-pathnames (make-pathname :name "dot" :type "")))
-  #-(or win32 mswindows os-macosx) "/usr/bin/dot"
+  nil
   "Path to the dot command")
 
 ;; the path to the neato executable (used for drawing undirected
 ;; graphs).
 (defvar *neato-path*
-  #+(or win32 mswindows) "\"C:/Program Files/ATT/Graphviz/bin/neato.exe\""
-  #+os-macosx (probe-file (merge-pathnames (make-pathname :name "neato" :type "")))
-  #-(or os-macosx win32 mswindows) "/usr/bin/neato"
+  nil
   "Path to the neato command")
-
-(eval-when (:load-toplevel :execute)
-  (setf *dot-path* (find-dot))
-  (setf *neato-path* (find-neato))
-  (or *dot-path* (warn "Could not find 'dot' executable! Please set CL-DOT:*DOT-PATH*"))
-  (or *neato-path* (warn "Could not find 'neato' executable! Please set CL-DOT:*NEATO-PATH*")))
 
 ;;; Classes
 
@@ -185,20 +171,23 @@ from OBJECTS, using the GRAPH-OBJECT- protocol.")
 (defun dot-graph (graph outfile &key (format :pdf) (directed t))
   "Renders GRAPH to OUTFILE by running the program in \*DOT-PATH* or
 *NEATO-PATH* depending on the value of the DIRECTED keyword
-argument.  The default is a directed graph.
-The output file is assigned a suffix based on the FORMAT.
-The default FORMAT is PDF."
-  (let ((outfile (merge-pathnames (parse-namestring outfile)
+argument.  The default is a directed graph.  The default
+FORMAT is PDF."
+  (let ((format (format nil "-T~(~a~)" format))
+        (outfile (merge-pathnames (parse-namestring outfile)
                                   (make-pathname :type (string-downcase format))))
-        (dot-path (if directed *dot-path* *neato-path*))
-        (format (format nil "-T~(~a~)" format))
+        (dot-path (if directed
+                      (setf *dot-path*
+                            (or *dot-path* (find-dot)))
+                      (setf *neato-path*
+                            (or *neato-path* (find-neato)))))
         (dot-string (with-output-to-string (stream)
                       (print-graph graph
                                    :stream stream
                                    :directed directed))))
     (unless dot-path
-      (error "Neither 'dot' nor 'neato' binary are found.
-Consider something like sudo apt install graphviz!"))
+      (error "~a binary not found. Make sure it is installed and in your path."
+             (if directed "'dot'" "'neato'")))
     (uiop:run-program (list dot-path format "-o" (namestring outfile))
                       :input (make-string-input-stream dot-string)
                       :output *standard-output*)))
